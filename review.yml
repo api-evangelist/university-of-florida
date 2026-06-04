@@ -1,0 +1,44 @@
+---
+name: University of Florida
+description: University of Florida public developer/API footprint review for APIs.json cataloging.
+url: https://raw.githubusercontent.com/api-evangelist/university-of-florida/refs/heads/main/review.yml
+created: '2026-06-03'
+modified: '2026-06-03'
+reviews:
+  - date: '2026-06-03'
+    rating: 2
+    summary: >-
+      UF has no centralized public developer portal. Verified live: the Schedule
+      of Courses (SOC) JSON API returns real course data (HTTP 200 with a term
+      parameter); the SOC filters endpoint resolves (200); the official
+      UniversityofFlorida GitHub org exists with 3 public repos; ufl.edu, it.ufl.edu,
+      ufdc.ufl.edu and info.apps.ufl.edu all return 200. Campus map JSON host
+      responds but blocks automated clients (403). UFDC OAI-PMH/RSS feeds are
+      documented by UF Library Technology Services; the legacy SobekCM OAI path
+      now redirects to a React app and an OpenAPI API is noted as forthcoming.
+      No endpoints fabricated; gated identity/SIS APIs excluded.
+    endpoints:
+      - url: https://one.ufl.edu/apix/soc/schedule/?category=RES&term=2251&last-control-number=0
+        status: 200
+        note: SOC API returns course listing JSON with parameters
+      - url: https://one.ufl.edu/apix/soc/filters/
+        status: 200
+        note: SOC filter options endpoint resolves
+      - url: https://campusmap.ufl.edu/library/cmapjson/geo_buildings.json
+        status: 403
+        note: Campus map JSON host blocks non-browser user agents
+      - url: https://ufdc.ufl.edu/
+        status: 200
+        note: UF Digital Collections live (React app; OAI-PMH/RSS documented)
+      - url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+        status: 200
+        note: UFDC API/metadata feed documentation (OAI-PMH, RSS, Swagger forthcoming)
+      - url: https://github.com/UniversityofFlorida
+        status: 200
+        note: Official GitHub org, 3 public repos
+      - url: https://www.ufl.edu/
+        status: 200
+        note: Official institution website
+      - url: https://www.linkedin.com/school/university-of-florida/
+        status: 999
+        note: Valid school page; LinkedIn returns 999 to automated clients
