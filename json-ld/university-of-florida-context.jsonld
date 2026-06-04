@@ -1,0 +1,68 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "uf": "https://www.ufl.edu/#",
+    "schema": "https://schema.org/",
+    "name": "schema:name",
+    "url": "schema:url",
+    "description": "schema:description",
+    "CollegeOrUniversity": "schema:CollegeOrUniversity",
+    "address": "schema:address",
+    "sameAs": "schema:sameAs",
+
+    "api": "uf:api",
+    "apiName": "schema:name",
+    "humanURL": "schema:url",
+    "baseURL": "uf:baseURL",
+
+    "course": "uf:course",
+    "code": "schema:courseCode",
+    "courseId": "schema:identifier",
+    "credits": "uf:credits",
+    "prerequisites": "schema:coursePrerequisites",
+    "section": "uf:section",
+    "instructors": "schema:instructor",
+    "meetTimes": "uf:meetTimes",
+    "openSeats": "uf:openSeats",
+    "deptName": "schema:department",
+
+    "collection": "uf:collection",
+    "bibid": "uf:bibid",
+    "publisher": "schema:publisher",
+    "type": "schema:additionalType"
+  },
+  "@type": "CollegeOrUniversity",
+  "name": "University of Florida",
+  "url": "https://www.ufl.edu/",
+  "description": "Public land-grant research university in Gainesville, Florida, United States.",
+  "sameAs": [
+    "https://github.com/UniversityofFlorida",
+    "https://www.linkedin.com/school/university-of-florida/"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Gainesville",
+    "addressRegion": "FL",
+    "addressCountry": "US"
+  },
+  "api": [
+    {
+      "@type": "WebAPI",
+      "apiName": "UF Schedule of Courses (SOC) API",
+      "humanURL": "https://github.com/Rolstenhouse/uf_api",
+      "baseURL": "https://one.ufl.edu/apix/soc/schedule/"
+    },
+    {
+      "@type": "WebAPI",
+      "apiName": "UF Campus Map JSON Data",
+      "humanURL": "https://campusmap.ufl.edu/",
+      "baseURL": "https://campusmap.ufl.edu/library/cmapjson/"
+    },
+    {
+      "@type": "WebAPI",
+      "apiName": "UF Digital Collections (UFDC) Metadata Feeds",
+      "humanURL": "https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/",
+      "baseURL": "https://api.patron.uflib.ufl.edu/"
+    }
+  ]
+}
