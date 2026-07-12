@@ -76,6 +76,8 @@ apis:
       - type: Website
         url: https://ufdc.ufl.edu/
 common:
+  - type: DomainSecurity
+    url: security/university-of-florida-domain-security.yml
   - type: Website
     url: https://www.ufl.edu/
   - type: GitHub
