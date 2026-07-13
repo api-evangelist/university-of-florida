@@ -5,7 +5,7 @@
       "source": "https://lts.uflib.ufl.edu/",
       "feed_url": "https://lts.uflib.ufl.edu/feed/",
       "title": "UF Library Technology Services",
-      "saved": 0,
+      "saved": 2,
       "method": "none"
     },
     {
@@ -13,9 +13,10 @@
       "feed_url": "https://news.ufl.edu/feed/",
       "title": "UF News",
       "saved": 0,
-      "method": "none"
+      "method": "none",
+      "error": "fetch_failed: HTTPError"
     }
   ],
-  "post_count": 0,
-  "fetched": "2026-06-03T00:00:00Z"
+  "post_count": 2,
+  "fetched": "2026-07-11T11:43:46Z"
 }
