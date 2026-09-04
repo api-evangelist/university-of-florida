@@ -43,9 +43,10 @@ accessModel:
   source:
   - authentication
   - probed
+  - {url: 'https://one.ufl.edu/soc/', status: 301, note: 'declared website redirects to https://one.uf.edu/soc/ — a different registrable domain (ufl.edu -> uf.edu), possible rename or acquisition (probed 2026-09-03, roadmap#169)'}
   generated: '2026-09-01'
   method: probed
-position: Provider
+position: Producing
 access: Public
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/university-of-florida.png
 url: https://raw.githubusercontent.com/api-evangelist/university-of-florida/refs/heads/main/apis.yml
