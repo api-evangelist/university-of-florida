@@ -69,195 +69,447 @@ created: '2026-06-03'
 modified: '2026-09-01'
 specificationVersion: '0.23'
 apis:
-  - aid: university-of-florida:soc-schedule
-    name: UF Schedule of Courses (SOC) API
-    x-operator: institution
-    description: >-
-      The public JSON backend of ONE.UF, the University of Florida's student self-service
-      portal. Searches courses and sections across 49 academic terms with filters for
-      department (203 codes), program level, course code and title, class number,
-      instructor, meeting day, General Education area, online delivery, course level range
-      and UF's Artificial Intelligence curriculum designation. Cursor-paged, unauthenticated,
-      and entirely undocumented by UF — the contract in openapi/ was derived by probing the
-      live endpoints and reading the ONE.UF client bundle on 2026-09-01. Institution-operated:
-      one.ufl.edu resolves to 128.227.9.53 in UFNET with no CNAME, under a UF-procured
-      InCommon certificate.
-    humanURL: https://one.ufl.edu/soc/
-    baseURL: https://one.ufl.edu/apix/soc
-    tags: [ Course Catalog, Courses, Schedule, Registrar, Education, Artificial Intelligence ]
-    properties:
-      - type: OpenAPI
-        url: openapi/university-of-florida-schedule-of-courses-openapi.yml
-      - type: JSONSchema
-        url: json-schema/university-of-florida-schedule-of-courses-schema.json
-      - type: Examples
-        url: examples/university-of-florida-soc-schedule-response.json
-      - type: Examples
-        url: examples/university-of-florida-soc-filters-response.json
-      - type: Website
-        url: https://one.ufl.edu/soc/
-      - type: Documentation
-        url: https://github.com/Rolstenhouse/uf_api
-      - type: Authentication
-        url: authentication/university-of-florida-authentication.yml
-      - type: Errors
-        url: errors/university-of-florida-errors.yml
-      - type: Rules
-        url: rules/university-of-florida-rules.yml
-      - type: Vocabulary
-        url: vocabulary/university-of-florida-vocabulary.yml
-      - type: Lifecycle
-        url: lifecycle/university-of-florida-lifecycle.yml
-  - aid: university-of-florida:libraries-patron-api
-    name: UF Libraries Patron API
-    x-operator: institution
-    description: >-
-      The public read API of the George A. Smathers Libraries, backing the UF Digital
-      Collections, the Digital Library of the Caribbean and the Florida Digital Newspaper
-      Library. Seventeen resources over a corpus of more than a million items: exact and
-      faceted search, OCR full-text page search, bounding-box and radius geospatial search,
-      per-item MODS citation and downloads, serial hierarchy, collection and media-type
-      vocabularies with live counts, public view statistics, three RSS feeds, and a
-      conformant OAI-PMH 2.0 repository at /oai serving Dublin Core and MODS 3.7. It is
-      self-documenting — the root returns a machine-readable resource index and each
-      resource returns worked example URLs — which is how this contract was derived, since
-      UF publishes no OpenAPI for it. Institution-operated: api.patron.uflib.ufl.edu
-      resolves into UFNET with no vendor CNAME, and no repository product (Figshare, DSpace,
-      EPrints, Dataverse, Pure) appears anywhere in its payloads.
-    humanURL: https://ufdc.ufl.edu/
-    baseURL: https://api.patron.uflib.ufl.edu
-    tags: [ Digital Collections, Library, Research Data, OAI-PMH, Metadata, Search, Open Data ]
-    properties:
-      - type: OpenAPI
-        url: openapi/university-of-florida-libraries-patron-api-openapi.yml
-      - type: JSONSchema
-        url: json-schema/university-of-florida-libraries-patron-api-schema.json
-      - type: Examples
-        url: examples/university-of-florida-libraries-root-index.json
-      - type: Examples
-        url: examples/university-of-florida-libraries-exactsearch-response.json
-      - type: Examples
-        url: examples/university-of-florida-ufdc-oai-identify.xml
-      - type: Website
-        url: https://ufdc.ufl.edu/
-      - type: Documentation
-        url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
-      - type: Authentication
-        url: authentication/university-of-florida-authentication.yml
-      - type: Errors
-        url: errors/university-of-florida-errors.yml
-      - type: Rules
-        url: rules/university-of-florida-rules.yml
-      - type: Vocabulary
-        url: vocabulary/university-of-florida-vocabulary.yml
-      - type: Conformance
-        url: conformance/university-of-florida-conformance.yml
-  - aid: university-of-florida:identity-federation
-    name: UF Shibboleth Identity Provider (InCommon / eduGAIN)
-    x-operator: federation
-    description: >-
-      The University of Florida's SAML 2.0 identity provider, entityID
-      https://login.ufl.edu/idp/shibboleth, registered in InCommon and interfederated into
-      eduGAIN. Signed SAML metadata is retrievable per-entity from the InCommon Metadata
-      Query service. UF self-hosts it: login.ufl.edu resolves to 128.227.9.67 in UF's own
-      ARIN allocation with no CNAME, on an Internet2/InCommon certificate — unlike the
-      federation-managed IdPs found under institution hostnames elsewhere in this cohort.
-      The entity carries REFEDS Research & Scholarship (a machine-readable attribute-release
-      commitment), REFEDS Sirtfi (a security-incident-response commitment with a contactable
-      team), and a published Shibboleth scope of ufl.edu. A federation is shared by
-      definition; the identity provider behind this entry is UF's own.
-    humanURL: https://it.ufl.edu/
-    baseURL: https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
-    tags: [ Identity Federation, Shibboleth, SAML, InCommon, eduGAIN, Authentication ]
-    properties:
-      - type: IdentityFederation
-        url: identity-federation/university-of-florida-identity-federation.yml
-      - type: Conformance
-        url: conformance/university-of-florida-conformance.yml
-      - type: Metadata
-        url: identity-federation/university-of-florida-idp-incommon-metadata.xml
-  - aid: university-of-florida:campus-map
-    name: UF Campus Map JSON Data
-    x-operator: institution
-    description: >-
-      JSON datasets backing the UF interactive campus map — building footprints, bus stops,
-      dining locations, parking lots and housing with coordinates and metadata. The host is
-      UF's own (campusmap.ufl.edu, CNAME to virtual-l2www-prod-bb-publicssl.server.ufl.edu,
-      128.227.36.81) and the map itself is live, but the JSON is not agent-reachable: the
-      host WAF returns HTTP 403 to every non-browser client, verified 2026-09-01 with a full
-      desktop Chrome User-Agent and a matching Referer. Recorded as a live but blocked
-      institution surface, not as a dead one and not as an available API.
-    humanURL: https://campusmap.ufl.edu/
-    baseURL: https://campusmap.ufl.edu/library/cmapjson/
-    tags: [ Campus, Maps, Geo, Open Data, Campus Life ]
-    properties:
-      - type: Website
-        url: https://campusmap.ufl.edu/
-      - type: Documentation
-        url: https://github.com/Rolstenhouse/uf_api
-  - aid: university-of-florida:crossref-membership
-    name: Crossref Membership — UF George A. Smathers Libraries
-    x-operator: registry
-    description: >-
-      The University of Florida George A. Smathers Libraries is a Crossref member, id 17357,
-      depositing DOIs under prefix 10.32473 — 14,724 DOIs registered as of 2026-09-01. This
-      is a registry membership, a machine-evidenced fact about the institution, not an API
-      UF operates; the Crossref API belongs to Crossref and is not saved here. UF does NOT
-      appear as a DataCite member or repository client — probed and confirmed absent.
-    humanURL: https://uflib.ufl.edu/
-    baseURL: https://api.crossref.org/members/17357
-    tags: [ Crossref, DOI, Research Data, Registry, Scholarly Publishing ]
-    properties:
-      - type: Conformance
-        url: conformance/university-of-florida-conformance.yml
-  - aid: university-of-florida:ror
-    name: ROR Registration — University of Florida
-    x-operator: registry
-    description: >-
-      The University of Florida's entry in the Research Organization Registry,
-      https://ror.org/02y3ad647. A persistent identifier the institution is registered in,
-      recorded as a membership fact. The ROR API is ROR's, not UF's.
-    humanURL: https://ror.org/02y3ad647
-    baseURL: https://api.ror.org/v2/organizations/02y3ad647
-    tags: [ ROR, Persistent Identifier, Registry, Research Data ]
-  - aid: university-of-florida:canvas-lms
-    name: UF Canvas LMS Tenancy
-    x-operator: tenant
-    description: >-
-      UF's learning management system is Canvas, running on Instructure's platform at the
-      UF-specific tenant ufl.instructure.com. The Canvas REST API is present on that tenant
-      and correctly returns HTTP 401 with a JSON error to an unauthenticated caller. The
-      teaching data is UF's; the contract is Instructure's engineering and is deliberately
-      NOT saved under this institution. Any LTI, Caliper or OneRoster conformance this
-      platform demonstrates belongs to Instructure and is not credited to UF.
-    humanURL: https://elearning.ufl.edu/
-    baseURL: https://ufl.instructure.com/api/v1
-    tags: [ LMS, Canvas, Tenant, Teaching and Learning ]
-  - aid: university-of-florida:course-catalog-courseleaf
-    name: UF Academic Catalog (CourseLeaf tenancy)
-    x-operator: tenant
-    description: >-
-      The UF academic catalog runs on Leepfrog's CourseLeaf platform. catalog.ufl.edu CNAMEs
-      to ufl-public.courseleaf.com (12.175.6.47) — a vendor platform behind a UF hostname,
-      which a hostname-only verdict reads as institution-operated and which the cohort DNS
-      pass had recorded as no CNAME tenancy for this repo. CourseLeaf's `ribbit` interface
-      responds with real UF course XML, so the surface is live and the data is UF's, but the
-      contract is Leepfrog's and is not saved here.
-    humanURL: https://catalog.ufl.edu/
-    baseURL: https://catalog.ufl.edu/ribbit/
-    tags: [ Course Catalog, Tenant, CourseLeaf, Education ]
-  - aid: university-of-florida:events-calendar-livewhale
-    name: UF Events Calendar (LiveWhale tenancy)
-    x-operator: tenant
-    description: >-
-      The UF events calendar runs on LiveWhale Calendar. calendar.ufl.edu CNAMEs to
-      ufl-prod.lwcal.com — again a vendor platform behind a UF hostname that a
-      hostname-only verdict would credit to UF. The iCalendar feed at /live/ical/events is
-      live and returns real UF events; the JSON feed path is not exposed. UF's events, the
-      vendor's contract.
-    humanURL: https://calendar.ufl.edu/
-    baseURL: https://calendar.ufl.edu/live/ical/events
-    tags: [ Events, Calendar, Campus Life, Tenant, LiveWhale ]
+- aid: university-of-florida:identity-federation
+  name: UF Shibboleth Identity Provider (InCommon / eduGAIN)
+  x-operator: federation
+  description: >-
+    The University of Florida's SAML 2.0 identity provider, entityID https://login.ufl.edu/idp/shibboleth,
+    registered in InCommon and interfederated into eduGAIN. Signed SAML metadata is retrievable per-entity
+    from the InCommon Metadata Query service. UF self-hosts it: login.ufl.edu resolves to 128.227.9.67
+    in UF's own ARIN allocation with no CNAME, on an Internet2/InCommon certificate — unlike the federation-managed
+    IdPs found under institution hostnames elsewhere in this cohort. The entity carries REFEDS Research
+    & Scholarship (a machine-readable attribute-release commitment), REFEDS Sirtfi (a security-incident-response
+    commitment with a contactable team), and a published Shibboleth scope of ufl.edu. A federation is
+    shared by definition; the identity provider behind this entry is UF's own.
+  humanURL: https://it.ufl.edu/
+  baseURL: https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
+  tags:
+  - Identity Federation
+  - Shibboleth
+  - SAML
+  - InCommon
+  - eduGAIN
+  - Authentication
+  properties:
+  - type: IdentityFederation
+    url: identity-federation/university-of-florida-identity-federation.yml
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+  - type: Metadata
+    url: identity-federation/university-of-florida-idp-incommon-metadata.xml
+- aid: university-of-florida:campus-map
+  name: UF Campus Map JSON Data
+  x-operator: institution
+  description: >-
+    JSON datasets backing the UF interactive campus map — building footprints, bus stops, dining locations,
+    parking lots and housing with coordinates and metadata. The host is UF's own (campusmap.ufl.edu, CNAME
+    to virtual-l2www-prod-bb-publicssl.server.ufl.edu, 128.227.36.81) and the map itself is live, but
+    the JSON is not agent-reachable: the host WAF returns HTTP 403 to every non-browser client, verified
+    2026-09-01 with a full desktop Chrome User-Agent and a matching Referer. Recorded as a live but blocked
+    institution surface, not as a dead one and not as an available API.
+  humanURL: https://campusmap.ufl.edu/
+  baseURL: https://campusmap.ufl.edu/library/cmapjson/
+  tags:
+  - Campus
+  - Maps
+  - Geo
+  - Open Data
+  - Campus Life
+  properties:
+  - type: Website
+    url: https://campusmap.ufl.edu/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+- aid: university-of-florida:crossref-membership
+  name: Crossref Membership — UF George A. Smathers Libraries
+  x-operator: registry
+  description: >-
+    The University of Florida George A. Smathers Libraries is a Crossref member, id 17357, depositing
+    DOIs under prefix 10.32473 — 14,724 DOIs registered as of 2026-09-01. This is a registry membership,
+    a machine-evidenced fact about the institution, not an API UF operates; the Crossref API belongs to
+    Crossref and is not saved here. UF does NOT appear as a DataCite member or repository client — probed
+    and confirmed absent.
+  humanURL: https://uflib.ufl.edu/
+  baseURL: https://api.crossref.org/members/17357
+  tags:
+  - Crossref
+  - DOI
+  - Research Data
+  - Registry
+  - Scholarly Publishing
+  properties:
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:ror
+  name: ROR Registration — University of Florida
+  x-operator: registry
+  description: >-
+    The University of Florida's entry in the Research Organization Registry, https://ror.org/02y3ad647.
+    A persistent identifier the institution is registered in, recorded as a membership fact. The ROR API
+    is ROR's, not UF's.
+  humanURL: https://ror.org/02y3ad647
+  baseURL: https://api.ror.org/v2/organizations/02y3ad647
+  tags:
+  - ROR
+  - Persistent Identifier
+  - Registry
+  - Research Data
+- aid: university-of-florida:canvas-lms
+  name: UF Canvas LMS Tenancy
+  x-operator: tenant
+  description: >-
+    UF's learning management system is Canvas, running on Instructure's platform at the UF-specific tenant
+    ufl.instructure.com. The Canvas REST API is present on that tenant and correctly returns HTTP 401
+    with a JSON error to an unauthenticated caller. The teaching data is UF's; the contract is Instructure's
+    engineering and is deliberately NOT saved under this institution. Any LTI, Caliper or OneRoster conformance
+    this platform demonstrates belongs to Instructure and is not credited to UF.
+  humanURL: https://elearning.ufl.edu/
+  baseURL: https://ufl.instructure.com/api/v1
+  tags:
+  - LMS
+  - Canvas
+  - Tenant
+  - Teaching and Learning
+- aid: university-of-florida:course-catalog-courseleaf
+  name: UF Academic Catalog (CourseLeaf tenancy)
+  x-operator: tenant
+  description: >-
+    The UF academic catalog runs on Leepfrog's CourseLeaf platform. catalog.ufl.edu CNAMEs to ufl-public.courseleaf.com
+    (12.175.6.47) — a vendor platform behind a UF hostname, which a hostname-only verdict reads as institution-operated
+    and which the cohort DNS pass had recorded as no CNAME tenancy for this repo. CourseLeaf's `ribbit`
+    interface responds with real UF course XML, so the surface is live and the data is UF's, but the contract
+    is Leepfrog's and is not saved here.
+  humanURL: https://catalog.ufl.edu/
+  baseURL: https://catalog.ufl.edu/ribbit/
+  tags:
+  - Course Catalog
+  - Tenant
+  - CourseLeaf
+  - Education
+- aid: university-of-florida:events-calendar-livewhale
+  name: UF Events Calendar (LiveWhale tenancy)
+  x-operator: tenant
+  description: >-
+    The UF events calendar runs on LiveWhale Calendar. calendar.ufl.edu CNAMEs to ufl-prod.lwcal.com —
+    again a vendor platform behind a UF hostname that a hostname-only verdict would credit to UF. The
+    iCalendar feed at /live/ical/events is live and returns real UF events; the JSON feed path is not
+    exposed. UF's events, the vendor's contract.
+  humanURL: https://calendar.ufl.edu/
+  baseURL: https://calendar.ufl.edu/live/ical/events
+  tags:
+  - Events
+  - Calendar
+  - Campus Life
+  - Tenant
+  - LiveWhale
+- aid: university-of-florida:university-of-florida-analytics-api
+  name: University of Florida Analytics API
+  description: Public view statistics.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-analytics-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:university-of-florida-discovery-api
+  name: University of Florida Discovery API
+  description: Root index and controlled vocabularies.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-discovery-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:university-of-florida-filters-api
+  name: University of Florida Filters API
+  description: Controlled vocabularies backing the SOC search form.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Filters
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-filters-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:university-of-florida-harvest-api
+  name: University of Florida Harvest API
+  description: OAI-PMH and RSS harvesting surfaces.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Harvest
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-harvest-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:university-of-florida-item-api
+  name: University of Florida Item API
+  description: Per-item citation, downloads and volume enumeration.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Item
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-item-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:university-of-florida-schedule-api
+  name: University of Florida Schedule API
+  description: Course and section search across a UF academic term.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Schedule
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-schedule-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
+- aid: university-of-florida:university-of-florida-search-api
+  name: University of Florida Search API
+  description: Full-text, exact, geospatial and page-level search.
+  humanURL: https://one.ufl.edu/soc/
+  baseURL: https://one.ufl.edu/apix/soc
+  tags:
+  - Search
+  properties:
+  - type: OpenAPI
+    url: openapi/university-of-florida-search-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-schedule-of-courses-schema.json
+  - type: Examples
+    url: examples/university-of-florida-soc-schedule-response.json
+  - type: Examples
+    url: examples/university-of-florida-soc-filters-response.json
+  - type: Website
+    url: https://one.ufl.edu/soc/
+  - type: Documentation
+    url: https://github.com/Rolstenhouse/uf_api
+  - type: Authentication
+    url: authentication/university-of-florida-authentication.yml
+  - type: Errors
+    url: errors/university-of-florida-errors.yml
+  - type: Rules
+    url: rules/university-of-florida-rules.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-florida-vocabulary.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-florida-lifecycle.yml
+  - type: JSONSchema
+    url: json-schema/university-of-florida-libraries-patron-api-schema.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-root-index.json
+  - type: Examples
+    url: examples/university-of-florida-libraries-exactsearch-response.json
+  - type: Examples
+    url: examples/university-of-florida-ufdc-oai-identify.xml
+  - type: Website
+    url: https://ufdc.ufl.edu/
+  - type: Documentation
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  - type: Conformance
+    url: conformance/university-of-florida-conformance.yml
 common:
   - type: Website
     url: https://www.ufl.edu/
