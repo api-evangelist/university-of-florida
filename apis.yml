@@ -168,6 +168,11 @@ apis:
   tags:
   - LMS
   - Canvas
+  - Tenants
+  - Teaching and Learning
+  tags_raw:
+  - LMS
+  - Canvas
   - Tenant
   - Teaching and Learning
 - aid: university-of-florida:course-catalog-courseleaf
@@ -183,6 +188,11 @@ apis:
   baseURL: https://catalog.ufl.edu/ribbit/
   tags:
   - Course Catalog
+  - Tenants
+  - CourseLeaf
+  - Education
+  tags_raw:
+  - Course Catalog
   - Tenant
   - CourseLeaf
   - Education
@@ -197,6 +207,12 @@ apis:
   humanURL: https://calendar.ufl.edu/
   baseURL: https://calendar.ufl.edu/live/ical/events
   tags:
+  - Event
+  - Calendar
+  - Campus Life
+  - Tenants
+  - LiveWhale
+  tags_raw:
   - Events
   - Calendar
   - Campus Life
