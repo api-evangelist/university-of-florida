@@ -1,0 +1,200 @@
+openapi: 3.2.0
+info:
+  title: University of Florida Libraries Patron Harvest API
+  version: '2026-09-01'
+  summary: Public, unauthenticated read API over the University of Florida Digital Collections, the Digital Library of the Caribbean and the Florida Digital Newspaper Library.
+  description: '`api.patron.uflib.ufl.edu` is the backend of the UF Digital Collections reader at
+
+    ufdc.ufl.edu.'
+  contact:
+    name: UF Digital Library Center
+    email: digby@ufl.edu
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  x-operator: institution
+  x-operator-basis: api.patron.uflib.ufl.edu -> 128.227.18.113, 128.227.24.223; ARIN NetName UFNET, OrgName "University of Florida", CIDR 128.227.0.0/16. No vendor CNAME. TLS issuer "C=US, O=Internet2, CN=InCommon RSA Server CA 2". The OAI-PMH Identify response names UF as the repository and digby@ufl.edu as adminEmail. No vendor product string appears in any probed response.
+  x-provenance:
+    generated: '2026-09-01'
+    method: derived
+    source: Live HTTP probes of every resource named in the root index of https://api.patron.uflib.ufl.edu on 2026-09-01, plus the self-documenting example URLs each resource root returns. The host itself was discovered by reading https://ufdc.ufl.edu/assets/environment-CtcEkdJa.js, the UFDC client's build-time environment module.
+servers:
+- url: https://api.patron.uflib.ufl.edu
+  description: 'Production. Public and unauthenticated; no API key is issued or required.
+
+
+    WARNING — the hostname resolves to TWO A records that do not serve the same routes.
+
+    128.227.18.113 serves every resource. 128.227.24.223 serves every resource EXCEPT
+
+    /oai and /oai_by_title, which it returns 404 for. Verified 2026-09-01 by pinning
+
+    each address with --resolve and replaying all nine sampled routes against both. See
+
+    `x-node-divergence`.'
+tags:
+- name: Harvest
+  description: OAI-PMH and RSS harvesting surfaces.
+paths:
+  /oai:
+    get:
+      tags:
+      - Harvest
+      operationId: oaiPmh
+      summary: OAI-PMH 2.0 repository interface
+      description: 'A conformant OAI-PMH 2.0 repository for the University of Florida Digital
+
+        Collections. Verified 2026-09-01: repositoryName "University of Florida Digital
+
+        Collections", repositoryIdentifier `UFDC`, delimiter `:`, sampleIdentifier
+
+        `oai:UFDC:UF00078891_00001`, adminEmail digby@ufl.edu, earliestDatestamp
+
+        2007-08-07, deletedRecord `transient`, granularity `YYYY-MM-DD`.
+
+
+        Metadata formats: `oai_dc` (Dublin Core) and `mods` (MODS 3.7).
+
+
+        This replaces the dead `ufdc.ufl.edu/sobekcm_oai.aspx` path.'
+      parameters:
+      - name: verb
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - Identify
+          - ListMetadataFormats
+          - ListSets
+          - ListIdentifiers
+          - ListRecords
+          - GetRecord
+      - name: metadataPrefix
+        in: query
+        schema:
+          type: string
+          enum:
+          - oai_dc
+          - mods
+      - name: identifier
+        in: query
+        schema:
+          type: string
+          examples:
+          - oai:UFDC:UF00078891_00001
+      - name: set
+        in: query
+        schema:
+          type: string
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: until
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: resumptionToken
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OAI-PMH XML envelope. Protocol errors are carried INSIDE a 200 response as an `<error code="...">` element, per OAI-PMH 2.0 — not as an HTTP status.
+          content:
+            text/xml:
+              schema:
+                type: string
+  /oai_by_title:
+    get:
+      tags:
+      - Harvest
+      operationId: oaiPmhByTitle
+      summary: OAI-PMH 2.0 interface set-partitioned by title
+      parameters:
+      - name: verb
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OAI-PMH XML envelope.
+          content:
+            text/xml:
+              schema:
+                type: string
+  /rss:
+    get:
+      tags:
+      - Harvest
+      operationId: listRssFeeds
+      summary: Index of the available RSS feeds
+      responses:
+        '200':
+          description: Feed index — UFDC, DLOC and FDNL.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /rss_ufdc:
+    get:
+      tags:
+      - Harvest
+      operationId: getUfdcRss
+      summary: RSS feed for UF Digital Collections
+      responses:
+        '200':
+          description: RSS XML.
+          content:
+            application/rss+xml:
+              schema:
+                type: string
+  /rss_dloc:
+    get:
+      tags:
+      - Harvest
+      operationId: getDlocRss
+      summary: RSS feed for the Digital Library of the Caribbean
+      responses:
+        '200':
+          description: RSS XML.
+          content:
+            application/rss+xml:
+              schema:
+                type: string
+  /rss_fdnl:
+    get:
+      tags:
+      - Harvest
+      operationId: getFdnlRss
+      summary: RSS feed for the Florida Digital Newspaper Library
+      responses:
+        '200':
+          description: RSS XML.
+          content:
+            application/rss+xml:
+              schema:
+                type: string
+x-node-divergence:
+  observed: '2026-09-01'
+  method: probed
+  hosts:
+  - address: 128.227.18.113
+    routes_ok: all sampled
+  - address: 128.227.24.223
+    routes_404:
+    - /oai
+    - /oai_by_title
+    routes_ok:
+    - /
+    - /types
+    - /exactsearch
+    - /recent_additions
+    - /rss_ufdc
+    - /collections
+    - /fdnl_titles_list
+  impact: An OAI-PMH harvester that resolves onto the second node receives HTTP 404 and concludes the repository has been withdrawn. Which node answers is a DNS ordering accident, so the failure is intermittent and will not reproduce on a retry that lands on the other address. This is deployment drift between two backends, not a deliberate partition — every other route is served identically by both.

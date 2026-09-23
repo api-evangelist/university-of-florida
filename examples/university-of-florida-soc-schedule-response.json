@@ -1,0 +1,139 @@
+{
+  "specification": "API Evangelist Examples",
+  "specificationVersion": "0.1",
+  "provider": "University of Florida",
+  "providerId": "university-of-florida",
+  "generated": "2026-09-01",
+  "method": "probed",
+  "source": "https://one.ufl.edu/apix/soc/schedule/?term=2268&last-control-number=0&course-code=CIS&prog-level=UGRD (HTTP 200, 2026-09-01)",
+  "x-operator": "institution",
+  "description": "Verbatim live response from the UF Schedule of Courses API, truncated to the first two courses of the page. COURSES was 14 items; LASTCONTROLNUMBER, RETRIEVEDROWS and TOTALROWS are left at their real values so the paging counters read correctly against the truncation.",
+  "request": {
+    "method": "GET",
+    "url": "https://one.ufl.edu/apix/soc/schedule/?term=2268&last-control-number=0&course-code=CIS&prog-level=UGRD",
+    "headers": {},
+    "authentication": "none"
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json",
+    "truncated": true,
+    "body": [
+      {
+        "COURSES": [
+          {
+            "code": "CIS4301",
+            "courseId": "010869",
+            "name": "Information and Database Systems 1",
+            "openSeats": null,
+            "termInd": " ",
+            "description": "First part of a two-course sequence that studies the essential concepts, principles and techniques of modern database systems. Topics include modeling and querying of data using conceptual data models as well as the development of a database application.",
+            "prerequisites": "Prereq: (COP 3504 or COP 3503) and COT 3100.",
+            "sections": [
+              {
+                "number": "1304",
+                "classNumber": 10681,
+                "isStartDate45DaysOut": false,
+                "simpleSyllabusParams": "Fall 2026/CIS/4301/10681",
+                "gradBasis": "GRD",
+                "acadCareer": "UGRD",
+                "display": "Info and Database Sys 1",
+                "credits": 3,
+                "credits_min": 3,
+                "credits_max": 3,
+                "note": "Through March 27, 2026, only fifth\u2011year seniors majoring in Computer Science, Computer Engineering, Digital Arts & Sciences, or Data Science.\nMarch 28 through April 3, 2026, any senior in Computer Science, Computer Engineering, Digital Arts & Sciences or Data Science.\nApril 4 through April 17, 2026, any junior or senior in Computer Science, Computer Engineering, Digital Arts & Sciences, or Data Science may enroll.\nAfter April 17, 2026, any computing major may register.\nAfter, August 3 open to all UF majors.",
+                "dNote": "",
+                "genEd": [],
+                "quest": [],
+                "sectWeb": "PC",
+                "rotateTitle": "",
+                "deptCode": 19140000,
+                "deptName": "Computer & Information Science & Engineering",
+                "openSeats": null,
+                "courseFee": 0,
+                "lateFlag": "N",
+                "EEP": "Y",
+                "LMS": "",
+                "instructors": [
+                  {
+                    "name": "Mohammad Al-Saad"
+                  }
+                ],
+                "meetTimes": [],
+                "addEligible": "Y",
+                "grWriting": "N",
+                "finalExam": "",
+                "dropaddDeadline": "08/26/2026",
+                "pastDeadline": true,
+                "startDate": "",
+                "endDate": "",
+                "waitList": {
+                  "isEligible": "Y",
+                  "cap": 102,
+                  "total": 0
+                }
+              }
+            ]
+          },
+          {
+            "code": "CIS4360",
+            "courseId": "027048",
+            "name": "Computer and Information Security",
+            "openSeats": null,
+            "termInd": " ",
+            "description": "Covers systematic threat and risk assessment; programmed threats and controls in hardware, software, and human procedures; security policies, models, and mechanisms; theoretical limitations and practical implementations; certification and accreditation standards; and case study reviews. Includes projects.",
+            "prerequisites": "Prereq: CDA 3101.",
+            "sections": [
+              {
+                "number": "2CSE",
+                "classNumber": 25955,
+                "isStartDate45DaysOut": false,
+                "simpleSyllabusParams": "Fall 2026/CIS/4360/25955",
+                "gradBasis": "GRD",
+                "acadCareer": "UGRD",
+                "display": "Comp and Info Sec",
+                "credits": 3,
+                "credits_min": 3,
+                "credits_max": 3,
+                "note": "Through March 27, 2026, only fifth\u2011year seniors majoring in Computer Science, Computer Engineering, Digital Arts & Sciences, or Data Science.\nMarch 28 through April 3, 2026, any senior in Computer Science, Computer Engineering, Digital Arts & Sciences or Data Science.\nApril 4 through April 17, 2026, any junior or senior in Computer Science, Computer Engineering, Digital Arts & Sciences, or Data Science may enroll.\nAfter April 17, 2026, any computing major may register.\nAfter, August 3 open to all UF majors.",
+                "dNote": "",
+                "genEd": [],
+                "quest": [],
+                "sectWeb": "PC",
+                "rotateTitle": "",
+                "deptCode": 19140000,
+                "deptName": "Computer & Information Science & Engineering",
+                "openSeats": null,
+                "courseFee": 0,
+                "lateFlag": "N",
+                "EEP": "Y",
+                "LMS": "",
+                "instructors": [
+                  {
+                    "name": "Cheryl Resch"
+                  }
+                ],
+                "meetTimes": [],
+                "addEligible": "Y",
+                "grWriting": "N",
+                "finalExam": "",
+                "dropaddDeadline": "08/26/2026",
+                "pastDeadline": true,
+                "startDate": "",
+                "endDate": "",
+                "waitList": {
+                  "isEligible": "Y",
+                  "cap": 20,
+                  "total": 0
+                }
+              }
+            ]
+          }
+        ],
+        "LASTCONTROLNUMBER": 2245,
+        "RETRIEVEDROWS": 6,
+        "TOTALROWS": 6
+      }
+    ]
+  }
+}

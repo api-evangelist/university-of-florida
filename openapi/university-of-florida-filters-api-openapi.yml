@@ -1,0 +1,84 @@
+openapi: 3.2.0
+info:
+  title: University of Florida Schedule of Courses (SOC) Filters API
+  version: '2026-09-01'
+  summary: Public, unauthenticated JSON search over the University of Florida Schedule of Courses.
+  description: 'The Schedule of Courses (SOC) API is the JSON backend of ONE.UF, the University of
+
+    Florida''s student self-service portal.'
+  contact:
+    name: UF Computing Help Desk
+    url: https://helpdesk.ufl.edu/
+  x-operator: institution
+  x-operator-basis: one.ufl.edu -> 128.227.9.53, ARIN NetName UFNET, OrgName "University of Florida", CIDR 128.227.0.0/16. No CNAME to any vendor platform. TLS issuer "C=US, O=InCommon, LLC, CN=InCommon RSA OV SSL CA 3" — a UF-procured certificate. The API path, the response envelope and the error envelope are all UF's own; nothing in servers[], info.title or the payloads names a third-party product.
+  x-provenance:
+    generated: '2026-09-01'
+    method: derived
+    source: Live HTTP probes of https://one.ufl.edu/apix/soc/schedule/ and https://one.ufl.edu/apix/soc/filters/ on 2026-09-01, plus parameter names read from the ONE.UF SOC client bundle. Schemas reflect observed response payloads only.
+servers:
+- url: https://one.ufl.edu/apix/soc
+  description: Production. Public and unauthenticated; no API key is issued or required.
+tags:
+- name: Filters
+  description: Controlled vocabularies backing the SOC search form.
+paths:
+  /filters:
+    get:
+      tags:
+      - Filters
+      operationId: getFilters
+      summary: Controlled vocabularies for the schedule search
+      description: Returns every valid value for the `term`, `category`, `prog-level` and `dept` parameters of GET /schedule. Takes no parameters; any supplied are ignored.
+      responses:
+        '200':
+          description: The four controlled vocabularies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filters'
+              examples:
+                live:
+                  externalValue: https://one.ufl.edu/apix/soc/filters/
+components:
+  schemas:
+    Filters:
+      type: object
+      required:
+      - categories
+      - progLevels
+      - terms
+      - departments
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDesc'
+        progLevels:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDesc'
+        terms:
+          type: array
+          description: Observed 49 terms on 2026-09-01, newest first.
+          items:
+            allOf:
+            - $ref: '#/components/schemas/CodeDesc'
+            - type: object
+              properties:
+                SORT_TERM:
+                  type: integer
+        departments:
+          type: array
+          description: Observed 203 departments on 2026-09-01.
+          items:
+            $ref: '#/components/schemas/CodeDesc'
+    CodeDesc:
+      type: object
+      required:
+      - CODE
+      - DESC
+      properties:
+        CODE:
+          type: string
+        DESC:
+          type: string

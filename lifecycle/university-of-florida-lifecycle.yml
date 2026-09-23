@@ -1,0 +1,96 @@
+specification: API Evangelist Lifecycle
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+generated: '2026-09-01'
+method: probed
+x-operator: institution
+source: >-
+  Probes on 2026-09-01 for versioning, changelog, deprecation and status surfaces across
+  ufl.edu, one.ufl.edu, api.patron.uflib.ufl.edu, uflib.ufl.edu and it.ufl.edu, plus the
+  observed behaviour of the endpoints themselves.
+description: >-
+  The University of Florida operates two real public APIs and manages neither as a
+  product. There is no version in any URL, header or payload; no changelog; no deprecation
+  policy; no status page; no announcement channel; and no way for a consumer to be told
+  that something changed. This is the normal condition for an institution-operated
+  university API and it is recorded rather than penalised as a discovery failure — but it
+  is the single largest risk to anyone building on either surface.
+
+versioning:
+  scheme: none
+  detail: >-
+    Neither `https://one.ufl.edu/apix/soc` nor `https://api.patron.uflib.ufl.edu` carries a
+    version segment, a version header, an Accept-header media-type version, or a version
+    field in any response body. `/api/v1/` on the libraries host returns 404. The `version`
+    values in this repository's OpenAPI documents are OUR observation dates, not UF's.
+  consequence: >-
+    A breaking change is indistinguishable from an outage until a consumer parses the new
+    shape and fails. There is no pinning mechanism.
+
+changelog:
+  published: false
+  probes:
+  - { url: 'https://api.patron.uflib.ufl.edu/docs', status: 404 }
+  - { url: 'https://api.patron.uflib.ufl.edu/openapi.json', status: 404 }
+  - { url: 'https://api.patron.uflib.ufl.edu/swagger', status: 404 }
+  - { url: 'https://one.ufl.edu/apix/', status: 404 }
+  - { url: 'https://one.ufl.edu/apix/soc/', status: 404 }
+  detail: >-
+    No changelog, release notes or announcement feed exists for either API on any UF host.
+
+deprecation:
+  policy: none
+  observed_deprecation:
+    what: 'The SobekCM OAI-PMH endpoint at https://ufdc.ufl.edu/sobekcm_oai.aspx'
+    happened: >-
+      UF Digital Collections migrated from SobekCM to a React client backed by
+      api.patron.uflib.ufl.edu. The OAI-PMH interface moved with it.
+    how_it_was_communicated: >-
+      It was not. The old path still returns HTTP 200 — serving the React app shell to any
+      caller, including harvesters expecting XML. No 301, no 410, no Sunset header, no
+      Deprecation header, no notice. Any OAI-PMH harvester pointed at the old base URL has
+      been silently collecting nothing since the migration.
+    lesson: >-
+      This is the concrete cost of no lifecycle management, and it is why this profile
+      probes response BODIES rather than status codes.
+  headers_observed: 'No Deprecation, Sunset or Link rel="deprecation" header on any endpoint.'
+
+status_page:
+  published: false
+  probes:
+  - { url: 'https://status.it.ufl.edu/', status: 000, note: 'does not resolve' }
+  detail: >-
+    UFIT publishes service alerts through https://it.ufl.edu/ as human-readable web
+    content. No machine-readable status feed, no statuspage.io-class surface, and neither
+    public API is named as a monitored service.
+
+support:
+  channel: 'https://helpdesk.ufl.edu/ — UF Computing Help Desk, a general IT help desk.'
+  api_specific: false
+  detail: >-
+    There is no developer support channel. The SOC API is undocumented by UF, so a
+    consumer has no one to ask about it. The libraries API has a documented contact for
+    the COLLECTIONS (digby@ufl.edu, from the OAI-PMH adminEmail) but not for the API.
+
+stability_assessment:
+  soc_api:
+    observed_stable_since: '2026-06-03 (first probed by this catalog; the path and envelope are unchanged as of 2026-09-01)'
+    community_evidence: >-
+      github.com/Rolstenhouse/uf_api has documented this endpoint for years, which
+      suggests real longevity, but is not a commitment by UF.
+    risk: high
+    reason: 'Undocumented, unversioned, unannounced, and a student-portal backend UF may refactor at any time.'
+  libraries_patron_api:
+    known_defect: >-
+      The two A records behind api.patron.uflib.ufl.edu have drifted apart:
+      128.227.24.223 does not serve /oai or /oai_by_title, which 128.227.18.113 does. With
+      no status page and no changelog, an intermittent 404 on the OAI-PMH interface is
+      undiagnosable from outside and unannounceable from inside. It is the clearest
+      illustration in this profile of what the missing lifecycle surface costs.
+    risk: medium
+    reason: >-
+      Also unversioned and undocumented, but self-describing, standards-anchored on
+      OAI-PMH, and the declared successor to a system UF has already migrated once. UF LTS
+      states an OpenAPI/Swagger interface is forthcoming, which implies intent to treat it
+      as a product.

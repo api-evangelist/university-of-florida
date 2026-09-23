@@ -1,0 +1,121 @@
+{
+  "specification": "API Evangelist Examples",
+  "specificationVersion": "0.1",
+  "provider": "University of Florida",
+  "providerId": "university-of-florida",
+  "generated": "2026-09-01",
+  "method": "probed",
+  "source": "https://one.ufl.edu/apix/soc/filters/ (HTTP 200, 2026-09-01)",
+  "x-operator": "institution",
+  "description": "Verbatim live response from the UF SOC filters endpoint, each vocabulary truncated to its first six entries. Full counts observed 2026-09-01: 3 categories, 8 progLevels, 49 terms, 203 departments.",
+  "request": {
+    "method": "GET",
+    "url": "https://one.ufl.edu/apix/soc/filters/",
+    "authentication": "none"
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json",
+    "truncated": true,
+    "body": {
+      "categories": [
+        {
+          "CODE": "CWSP",
+          "DESC": "Campus / Web / Special Program"
+        },
+        {
+          "CODE": "UFOL",
+          "DESC": "UF Online Program"
+        },
+        {
+          "CODE": "IA",
+          "DESC": "Innovation Academy"
+        }
+      ],
+      "progLevels": [
+        {
+          "CODE": "UGRD",
+          "DESC": "Undergraduate"
+        },
+        {
+          "CODE": "GRAD",
+          "DESC": "Graduate"
+        },
+        {
+          "CODE": "LAW",
+          "DESC": "Law"
+        },
+        {
+          "CODE": "MED",
+          "DESC": "Medical School"
+        },
+        {
+          "CODE": "PHM",
+          "DESC": "Pharmacy"
+        },
+        {
+          "CODE": "PA",
+          "DESC": "Physician Assistant"
+        }
+      ],
+      "terms": [
+        {
+          "CODE": "2268",
+          "DESC": "Fall 2026",
+          "SORT_TERM": 2268
+        },
+        {
+          "CODE": "2265",
+          "DESC": "Summer 2026",
+          "SORT_TERM": 2265
+        },
+        {
+          "CODE": "22656W1",
+          "DESC": "Summer A 2026",
+          "SORT_TERM": 2265
+        },
+        {
+          "CODE": "22656W2",
+          "DESC": "Summer B 2026",
+          "SORT_TERM": 2265
+        },
+        {
+          "CODE": "22651",
+          "DESC": "Summer C 2026",
+          "SORT_TERM": 2265
+        },
+        {
+          "CODE": "2261",
+          "DESC": "Spring 2026",
+          "SORT_TERM": 2261
+        }
+      ],
+      "departments": [
+        {
+          "CODE": "17030000",
+          "DESC": "Accounting, Fisher School of"
+        },
+        {
+          "CODE": "23020000",
+          "DESC": "Advertising"
+        },
+        {
+          "CODE": "16620000",
+          "DESC": "African American Studies"
+        },
+        {
+          "CODE": "16600000",
+          "DESC": "African Studies"
+        },
+        {
+          "CODE": "60030000",
+          "DESC": "Agricultural & Life Sciences General"
+        },
+        {
+          "CODE": "60260000",
+          "DESC": "Agricultural Education and Communication"
+        }
+      ]
+    }
+  }
+}

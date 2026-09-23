@@ -1,0 +1,112 @@
+openapi: 3.2.0
+info:
+  title: University of Florida Libraries Patron Analytics API
+  version: '2026-09-01'
+  summary: Public, unauthenticated read API over the University of Florida Digital Collections, the Digital Library of the Caribbean and the Florida Digital Newspaper Library.
+  description: '`api.patron.uflib.ufl.edu` is the backend of the UF Digital Collections reader at
+
+    ufdc.ufl.edu.'
+  contact:
+    name: UF Digital Library Center
+    email: digby@ufl.edu
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  x-operator: institution
+  x-operator-basis: api.patron.uflib.ufl.edu -> 128.227.18.113, 128.227.24.223; ARIN NetName UFNET, OrgName "University of Florida", CIDR 128.227.0.0/16. No vendor CNAME. TLS issuer "C=US, O=Internet2, CN=InCommon RSA Server CA 2". The OAI-PMH Identify response names UF as the repository and digby@ufl.edu as adminEmail. No vendor product string appears in any probed response.
+  x-provenance:
+    generated: '2026-09-01'
+    method: derived
+    source: Live HTTP probes of every resource named in the root index of https://api.patron.uflib.ufl.edu on 2026-09-01, plus the self-documenting example URLs each resource root returns. The host itself was discovered by reading https://ufdc.ufl.edu/assets/environment-CtcEkdJa.js, the UFDC client's build-time environment module.
+servers:
+- url: https://api.patron.uflib.ufl.edu
+  description: 'Production. Public and unauthenticated; no API key is issued or required.
+
+
+    WARNING — the hostname resolves to TWO A records that do not serve the same routes.
+
+    128.227.18.113 serves every resource. 128.227.24.223 serves every resource EXCEPT
+
+    /oai and /oai_by_title, which it returns 404 for. Verified 2026-09-01 by pinning
+
+    each address with --resolve and replaying all nine sampled routes against both. See
+
+    `x-node-divergence`.'
+tags:
+- name: Analytics
+  description: Public view statistics.
+paths:
+  /stats:
+    get:
+      tags:
+      - Analytics
+      operationId: getStats
+      summary: Public view statistics
+      description: Called with no parameters, returns worked example URLs. Each named parameter selects a different report; they are used as flags or as keyed lookups.
+      parameters:
+      - name: bibid
+        in: query
+        description: Per-volume view counts for one bibid.
+        schema:
+          type: string
+      - name: item
+        in: query
+        description: View count for one item, `BIBID_VID`.
+        schema:
+          type: string
+          examples:
+          - UF00086443_00002
+      - name: overview
+        in: query
+        description: Overview for one collection code.
+        schema:
+          type: string
+      - name: view_history_bibid
+        in: query
+        schema:
+          type: string
+      - name: view_history_collection
+        in: query
+        schema:
+          type: string
+      - name: top_bibids
+        in: query
+        description: Flag; present with no value.
+        schema:
+          type: string
+      - name: top_bibids_by_portal
+        in: query
+        description: Flag; present with no value.
+        schema:
+          type: string
+      - name: main_page_stats
+        in: query
+        description: Flag; present with no value.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Statistics.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+x-node-divergence:
+  observed: '2026-09-01'
+  method: probed
+  hosts:
+  - address: 128.227.18.113
+    routes_ok: all sampled
+  - address: 128.227.24.223
+    routes_404:
+    - /oai
+    - /oai_by_title
+    routes_ok:
+    - /
+    - /types
+    - /exactsearch
+    - /recent_additions
+    - /rss_ufdc
+    - /collections
+    - /fdnl_titles_list
+  impact: An OAI-PMH harvester that resolves onto the second node receives HTTP 404 and concludes the repository has been withdrawn. Which node answers is a DNS ordering accident, so the failure is intermittent and will not reproduce on a retry that lands on the other address. This is deployment drift between two backends, not a deliberate partition — every other route is served identically by both.

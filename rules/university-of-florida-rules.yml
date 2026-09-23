@@ -1,0 +1,155 @@
+specification: API Evangelist Consumption Rules
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+generated: '2026-09-01'
+method: derived
+x-operator: institution
+source: >-
+  Derived from the probe record of 2026-09-01 across both institution-operated University
+  of Florida APIs — the observed error envelopes, silent-failure modes, paging semantics
+  and absent headers documented in errors/, authentication/ and openapi/. Not published
+  by UF, which supplies no consumption guidance of any kind.
+description: >-
+  Rules a client — human or agent — must follow to consume UF's two public APIs without
+  producing confidently wrong answers. Every rule below exists because a probe found a way
+  to get a 200 that means something other than what it looks like.
+
+rules:
+- id: uf-soc-validate-term-first
+  severity: error
+  applies_to: 'https://one.ufl.edu/apix/soc/schedule'
+  rule: 'Validate `term` against GET /filters before searching.'
+  because: >-
+    An unrecognised term returns HTTP 200 with `TOTALROWS: 0`, identical in shape to a
+    legitimately empty search. There is no error. A client that trusts the status code
+    will report "no courses found" when it actually sent a bad term code.
+  evidence: 'GET /schedule?term=BOGUS&last-control-number=0 -> 200, [{"COURSES":[],"TOTALROWS":0}]'
+
+- id: uf-soc-unwrap-single-element-array
+  severity: error
+  applies_to: 'https://one.ufl.edu/apix/soc/schedule'
+  rule: 'The success body is an ARRAY containing exactly one object. Unwrap `[0]` before reading.'
+  because: 'The envelope is unusual and undocumented; treating the body as an object fails silently or throws.'
+
+- id: uf-soc-cursor-paging
+  severity: error
+  applies_to: 'https://one.ufl.edu/apix/soc/schedule'
+  rule: >-
+    Page with the cursor, not an offset. Send `last-control-number=0` first, then the
+    `LASTCONTROLNUMBER` from the previous response. Stop when accumulated
+    `RETRIEVEDROWS` reaches `TOTALROWS`.
+  because: >-
+    There is no `offset` or `page` parameter. `RETRIEVEDROWS` counts SECTION rows while
+    `COURSES` counts COURSES, so the two do not match and a client counting courses will
+    loop forever or stop early. Observed: RETRIEVEDROWS 50 alongside 59 courses.
+
+- id: uf-soc-unknown-params-ignored
+  severity: warning
+  applies_to: 'https://one.ufl.edu/apix/soc/schedule'
+  rule: 'Never assume a filter applied. Compare TOTALROWS against an unfiltered baseline.'
+  because: >-
+    Unrecognised or ineffective parameters are silently ignored and the unfiltered result
+    set is returned with HTTP 200. Twelve parameters named in UF''s own client bundle
+    (credits, cred-srch, var-cred, quest, qst-1..4, writing, wr-2000/4000/6000) did not
+    change the Fall 2026 result set under any value tried. A typo behaves the same way.
+
+- id: uf-soc-boolean-literal-true
+  severity: warning
+  applies_to: 'https://one.ufl.edu/apix/soc/schedule'
+  rule: 'Boolean filters take the literal string `true`. `Y`, `1` and `yes` are ignored.'
+  because: 'Verified: `ai=true` returns 138 rows; `ai=Y` returns the unfiltered 4,624.'
+
+- id: uf-soc-html-on-404
+  severity: warning
+  applies_to: 'https://one.ufl.edu/apix/soc'
+  rule: 'Check Content-Type before parsing. Unknown paths return HTML, not JSON.'
+  because: 'GET /apix/soc/departments/ returns 404 with an Express HTML page.'
+
+- id: uf-lib-read-the-root-index
+  severity: info
+  applies_to: 'https://api.patron.uflib.ufl.edu'
+  rule: 'Discover resources from the root index; discover each resource''s parameters from its own root.'
+  because: >-
+    UF publishes no documentation for this API, but the API documents itself: the root
+    returns a resource map and each resource root returns worked example URLs. This is the
+    authoritative parameter reference and it is machine-readable.
+
+- id: uf-lib-help-object-is-not-a-result
+  severity: error
+  applies_to: 'https://api.patron.uflib.ufl.edu'
+  rule: 'A 200 from a resource root called with no parameters is a HELP object, not an empty result set.'
+  because: >-
+    GET /mapsearch with no parameters returns example URLs, not zero hits. A client that
+    treats every 200 as data will ingest documentation as records.
+
+- id: uf-lib-strip-caller-ip
+  severity: error
+  applies_to: 'https://api.patron.uflib.ufl.edu'
+  rule: 'Discard the `ip` field before storing, logging or publishing any response.'
+  because: >-
+    Several resources echo the CALLER''s own IP address back in an `ip` field. It is the
+    consumer''s address, not UF data, and it does not belong in a stored artifact.
+
+- id: uf-lib-mediatype-not-normalised
+  severity: warning
+  applies_to: 'https://api.patron.uflib.ufl.edu/types'
+  rule: 'Fold media-type case and plurality yourself before aggregating.'
+  because: >-
+    `newspaper` (792,345) and `Newspapers` (172,327) are distinct values with distinct
+    counts because each maps to a distinct search-index keyword. Summing the raw list
+    double-counts categories; treating either as the total undercounts by 18 percent.
+
+- id: uf-lib-oai-errors-inside-200
+  severity: error
+  applies_to: 'https://api.patron.uflib.ufl.edu/oai'
+  rule: 'Parse the OAI-PMH XML for an `<error code>` element. HTTP status is never the validity signal.'
+  because: 'OAI-PMH 2.0 carries protocol errors inside a 200 response. This is correct for the standard.'
+
+- id: uf-oai-pin-the-working-node
+  severity: error
+  applies_to: 'https://api.patron.uflib.ufl.edu/oai'
+  rule: >-
+    Treat a 404 from /oai or /oai_by_title as a transient node failure, not a withdrawal.
+    Retry; if harvesting at scale, pin 128.227.18.113 and revalidate the pin periodically.
+  because: >-
+    The hostname resolves to two A records that do not serve the same routes.
+    128.227.18.113 serves the OAI-PMH interface; 128.227.24.223 returns 404 for /oai and
+    /oai_by_title while serving all seven other sampled resources normally. Verified
+    2026-09-01 with curl --resolve against both addresses. Which one answers is a DNS
+    ordering accident, so a harvester will see intermittent, unexplained 404s.
+
+- id: uf-do-not-use-legacy-sobekcm-oai
+  severity: error
+  applies_to: 'https://ufdc.ufl.edu/sobekcm_oai.aspx'
+  rule: 'Do not harvest the legacy SobekCM OAI path. Use https://api.patron.uflib.ufl.edu/oai.'
+  because: >-
+    The legacy path returns HTTP 200 carrying the UFDC React app shell — a soft-404. A
+    status-code-only liveness check grades it live and a harvester silently collects
+    nothing. This profile previously implied the legacy path was the OAI surface.
+
+- id: uf-campusmap-needs-a-browser
+  severity: warning
+  applies_to: 'https://campusmap.ufl.edu/library/cmapjson/'
+  rule: 'Expect HTTP 403. The host WAF rejects non-browser clients, with or without a Referer.'
+  because: >-
+    Verified 2026-09-01 with a full desktop Chrome User-Agent and a matching Referer: still
+    403 with an Apache Forbidden page. The host is alive; the JSON is not agent-reachable.
+
+- id: uf-no-rate-limit-signal
+  severity: warning
+  applies_to: 'all'
+  rule: 'Self-throttle. Neither API publishes a rate limit, a quota, or any rate-limit header.'
+  because: >-
+    No X-RateLimit-*, no Retry-After, no 429 observed. UF has no way to identify a
+    consumer and no published limit, so the only protection against being cut off is the
+    consumer''s own restraint. Treat both APIs as a courtesy, not an entitlement.
+
+- id: uf-no-terms-of-use
+  severity: warning
+  applies_to: 'all'
+  rule: 'No terms of use, licence or attribution requirement is published for either API.'
+  because: >-
+    Absence of terms is not permission. Neither API appears in any UF developer policy,
+    and the SOC API is undocumented by UF entirely. Consumption is at the consumer''s risk
+    and UF may change or withdraw either without notice.

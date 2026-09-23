@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" ID="_c61c07e1-ac58-4bba-88a9-a6143e4ba97c" entityID="https://login.ufl.edu/idp/shibboleth" validUntil="2026-09-15T19:37:27.181Z"><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><Reference URI="#_c61c07e1-ac58-4bba-88a9-a6143e4ba97c"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>qABNudcjWCpheDAJGC+K9k9uJY0GN3uaF4hLbFxIeig=</DigestValue></Reference></SignedInfo><SignatureValue>Z1d3pqB248HbHup3s4BOubwMe5zsNOEDGueLpUxl7VrCERJ+5vnMHMvbk1bSMBBd8gk07E/Zs06v
+psm5sVEwosn1acVg6mC3JhN3PYQleOpUPgW+Ovjy4xylwkgMOYEErKaB4iVxyGEQoqGeXZtUGxhL
+Z7zogPOUkXq300rB+1KzEErYu3EYN9RR405CQVzXcA53pW/hI2P0afR9zIzujyEb33YKJUdBUsfU
+jNoqfYXx6bwpeXjkYwW9+ZUeF+tE91qgz7UkyLx7evB3gzKCSC50A/cMBU9eouQFM9pP8iacZJ7p
+G9J5EMmjGtm1TNEVIW172qivA5zjY41u4tXPobSreRmcPRoxBFwX8XhM2J6eCN5qU/kqdEyq6UtG
+yfmA7pztCma+2QKB1SOp7JV0MNvC015d3LCz8nXlsRQBDOKFyoiXihxFmdicXVh+UOmebceK76sC
+otJhtS6JgPCEUAQkXMX8XI0E1ter1Wg8RSih9jHUgHYBEWMIhMMkrUHl</SignatureValue></Signature>
+  <Extensions>
+    <mdrpi:RegistrationInfo xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" registrationAuthority="https://incommon.org"/>
+    <mdattr:EntityAttributes xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute">
+      <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>https://refeds.org/sirtfi</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://macedir.org/entity-category-support" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>http://refeds.org/category/research-and-scholarship</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://macedir.org/entity-category" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>http://id.incommon.org/category/registered-by-incommon</saml:AttributeValue>
+      </saml:Attribute>
+    </mdattr:EntityAttributes>
+  </Extensions>
+  <IDPSSODescriptor errorURL="https://login.ufl.edu/error.html" protocolSupportEnumeration="urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+    <Extensions>
+      <shibmd:Scope xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" regexp="false">ufl.edu</shibmd:Scope>
+      <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+        <mdui:DisplayName xml:lang="en">University of Florida</mdui:DisplayName>
+        <mdui:Description xml:lang="en">University of Florida - GatorLink Credentials</mdui:Description>
+        <mdui:InformationURL xml:lang="en">http://helpdesk.ufl.edu/getting-help-for-gatorlink-log-in-issues/</mdui:InformationURL>
+        <mdui:PrivacyStatementURL xml:lang="en">https://privacy.ufl.edu</mdui:PrivacyStatementURL>
+        <mdui:Logo height="38" width="135" xml:lang="en">https://images.webadmin.ufl.edu/signatures/wordmark.gif</mdui:Logo>
+      </mdui:UIInfo>
+    </Extensions>
+    <KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <!-- Serial No. 503300231354481378496221738239568019530921546032, expires on Sat Feb  9 20:57:05 2036 GMT -->
+          <ds:X509Certificate>
+MIIDHzCCAgegAwIBAgIUWCjDTs/V7Q14tz1bROjTWAqsETAwDQYJKoZIhvcNAQEL
+BQAwGDEWMBQGA1UEAwwNbG9naW4udWZsLmVkdTAeFw0xNjAyMDkyMDU3MDVaFw0z
+NjAyMDkyMDU3MDVaMBgxFjAUBgNVBAMMDWxvZ2luLnVmbC5lZHUwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBmI4eLuAjiYwzDn1Gm4Tft4O3J8muBM3A
+MXfAZ9ttFMrAuhnzK0MXi6dtkZcN3ahX9l1NsIuKFtHa4TXte3xrYZ7vKAEKMoDH
+xG55Ui1rnJ2sJrh+w07tOOJ86+DyzNREOQw3ZhYqr8YbixWzJcPauJuzd2M2gjsC
+0gZbaUBQtdgrpWvmRwJfeGOMM8QIUBYcziCBI6jaft1H4l0tm/z/TDuqut5Ua+J7
+1m0Y24rKxff9aCH+wRLmlLfoafjeHnrE+CU62tg8CU2GjFk/P2O5Xo0UdE4+A6H7
+mM5HMTDJglpfVSybHAaxARujbIjo015Uvxmfi+9f+vd4yz2FhryrAgMBAAGjYTBf
+MB0GA1UdDgQWBBQHxunWSXlJm3hXt2uL7LacBy8nNDA+BgNVHREENzA1gg1sb2dp
+bi51ZmwuZWR1hiRodHRwczovL2xvZ2luLnVmbC5lZHUvaWRwL3NoaWJib2xldGgw
+DQYJKoZIhvcNAQELBQADggEBAFG3+T/QtIwDmEQ3J+Wl9+9FAZSgqUGKkn3XeTZ5
+YykXQm9U/VtDLj1ySyKWGOFSEqbQg6rbIQ9K+jS+z4bMh3QXZz8gK7FK4umWtetZ
+lZDmeeVoL8IocIpSvI2ZGMeqFsUyPeXf87XrlnNFBl0Bo0CVJ+ukYemBFRWO2PyB
+Hu0aiGOIaVb1m0lwR+Jk+wsAQI/s/qql0vjN1z1QM26FPai5v8x/1B0HTfcA8KMf
+NLTPu+p1EIvZXbUwgiaMpvCv3L2CA1vAi7Mgra2TmC/zRTwK0aQn15pDlf0EBe/p
+3UXBfq/T/5R2pIIWn09Wg/iBnUuWU3DxqcXJ7uC/qYc3Oyg=
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+    <ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://login.ufl.edu/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"/>
+    <ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://login.ufl.edu/idp/profile/SAML1/SOAP/ArtifactResolution" index="2"/>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://login.ufl.edu/idp/profile/SAML2/POST/SSO"/>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://login.ufl.edu/idp/profile/SAML2/Redirect/SSO"/>
+    <SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://login.ufl.edu/idp/profile/Shibboleth/SSO"/>
+  </IDPSSODescriptor>
+  <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+    <Extensions>
+      <shibmd:Scope xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" regexp="false">ufl.edu</shibmd:Scope>
+    </Extensions>
+    <KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <!-- Serial No. 503300231354481378496221738239568019530921546032, expires on Sat Feb  9 20:57:05 2036 GMT -->
+          <ds:X509Certificate>
+MIIDHzCCAgegAwIBAgIUWCjDTs/V7Q14tz1bROjTWAqsETAwDQYJKoZIhvcNAQEL
+BQAwGDEWMBQGA1UEAwwNbG9naW4udWZsLmVkdTAeFw0xNjAyMDkyMDU3MDVaFw0z
+NjAyMDkyMDU3MDVaMBgxFjAUBgNVBAMMDWxvZ2luLnVmbC5lZHUwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBmI4eLuAjiYwzDn1Gm4Tft4O3J8muBM3A
+MXfAZ9ttFMrAuhnzK0MXi6dtkZcN3ahX9l1NsIuKFtHa4TXte3xrYZ7vKAEKMoDH
+xG55Ui1rnJ2sJrh+w07tOOJ86+DyzNREOQw3ZhYqr8YbixWzJcPauJuzd2M2gjsC
+0gZbaUBQtdgrpWvmRwJfeGOMM8QIUBYcziCBI6jaft1H4l0tm/z/TDuqut5Ua+J7
+1m0Y24rKxff9aCH+wRLmlLfoafjeHnrE+CU62tg8CU2GjFk/P2O5Xo0UdE4+A6H7
+mM5HMTDJglpfVSybHAaxARujbIjo015Uvxmfi+9f+vd4yz2FhryrAgMBAAGjYTBf
+MB0GA1UdDgQWBBQHxunWSXlJm3hXt2uL7LacBy8nNDA+BgNVHREENzA1gg1sb2dp
+bi51ZmwuZWR1hiRodHRwczovL2xvZ2luLnVmbC5lZHUvaWRwL3NoaWJib2xldGgw
+DQYJKoZIhvcNAQELBQADggEBAFG3+T/QtIwDmEQ3J+Wl9+9FAZSgqUGKkn3XeTZ5
+YykXQm9U/VtDLj1ySyKWGOFSEqbQg6rbIQ9K+jS+z4bMh3QXZz8gK7FK4umWtetZ
+lZDmeeVoL8IocIpSvI2ZGMeqFsUyPeXf87XrlnNFBl0Bo0CVJ+ukYemBFRWO2PyB
+Hu0aiGOIaVb1m0lwR+Jk+wsAQI/s/qql0vjN1z1QM26FPai5v8x/1B0HTfcA8KMf
+NLTPu+p1EIvZXbUwgiaMpvCv3L2CA1vAi7Mgra2TmC/zRTwK0aQn15pDlf0EBe/p
+3UXBfq/T/5R2pIIWn09Wg/iBnUuWU3DxqcXJ7uC/qYc3Oyg=
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+    <AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://login.ufl.edu:8443/idp/profile/SAML1/SOAP/AttributeQuery"/>
+    <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://login.ufl.edu:8443/idp/profile/SAML2/SOAP/AttributeQuery"/>
+  </AttributeAuthorityDescriptor>
+  <Organization>
+    <OrganizationName xml:lang="en">University of Florida</OrganizationName>
+    <OrganizationDisplayName xml:lang="en">University of Florida</OrganizationDisplayName>
+    <OrganizationURL xml:lang="en">http://www.ufl.edu/</OrganizationURL>
+  </Organization>
+  <ContactPerson contactType="administrative">
+    <GivenName>Identity Services Team</GivenName>
+    <EmailAddress>mailto:Identity-Services@it.ufl.edu</EmailAddress>
+  </ContactPerson>
+  <ContactPerson contactType="support">
+    <GivenName>UF Computing Help Desk</GivenName>
+    <EmailAddress>mailto:helpdesk@ufl.edu</EmailAddress>
+  </ContactPerson>
+  <ContactPerson contactType="technical">
+    <GivenName>Identity Services Team</GivenName>
+    <EmailAddress>mailto:Identity-Services@it.ufl.edu</EmailAddress>
+  </ContactPerson>
+  <ContactPerson xmlns:remd="http://refeds.org/metadata" contactType="other" remd:contactType="http://refeds.org/metadata/contactType/security">
+    <GivenName>UF Incident Response team</GivenName>
+    <EmailAddress>mailto:ufirt@ufl.edu</EmailAddress>
+  </ContactPerson>
+</EntityDescriptor>

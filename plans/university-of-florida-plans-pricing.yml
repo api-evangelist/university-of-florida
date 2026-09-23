@@ -4,8 +4,15 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: University of Florida
 providerId: university-of-florida
 created: '2026-06-03'
-modified: '2026-06-03'
-reconciled: false
+modified: '2026-09-01'
+reconciled: true
+generated: '2026-09-01'
+method: probed
+x-operator: institution
+source: >-
+  Unauthenticated live requests to both institution-operated UF APIs on 2026-09-01, each
+  returning HTTP 200 with real data and no credential, plus negative probes for any
+  registration, key-issuance or developer-portal surface (all 404).
 tags:
 - Education
 - Higher Education

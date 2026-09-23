@@ -1,0 +1,418 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/university-of-florida/main/json-schema/university-of-florida-schedule-of-courses-schema.json",
+  "title": "University of Florida Schedule of Courses \u2014 response schemas",
+  "description": "JSON Schema 2020-12 derived from the probed OpenAPI in openapi/. Not published by the University of Florida.",
+  "x-provenance": {
+    "generated": "2026-09-01",
+    "method": "derived",
+    "x-operator": "institution",
+    "source": "Derived from openapi/university-of-florida-schedule-of-courses-openapi.yml, which was itself derived from live HTTP probes on 2026-09-01."
+  },
+  "$defs": {
+    "SchedulePage": {
+      "type": "object",
+      "description": "One page of course results plus the cursor-paging counters.",
+      "required": [
+        "COURSES",
+        "LASTCONTROLNUMBER",
+        "RETRIEVEDROWS",
+        "TOTALROWS"
+      ],
+      "properties": {
+        "COURSES": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Course"
+          }
+        },
+        "LASTCONTROLNUMBER": {
+          "type": "integer",
+          "description": "Cursor to pass as `last-control-number` on the next call."
+        },
+        "RETRIEVEDROWS": {
+          "type": "integer",
+          "description": "Rows returned by this call (observed ~50)."
+        },
+        "TOTALROWS": {
+          "type": "integer",
+          "description": "Total rows matching the query across all pages."
+        }
+      }
+    },
+    "Course": {
+      "type": "object",
+      "required": [
+        "code",
+        "courseId",
+        "name",
+        "sections"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Course code without space, e.g. ABE3000C."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Zero-padded internal course identifier."
+        },
+        "name": {
+          "type": "string"
+        },
+        "openSeats": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Frequently null at the course level; read section.openSeats."
+        },
+        "termInd": {
+          "type": "string",
+          "description": "Term indicator; single character, often a space."
+        },
+        "description": {
+          "type": "string"
+        },
+        "prerequisites": {
+          "type": "string"
+        },
+        "courseKey": {
+          "type": "string",
+          "description": "Client-assigned key; present only in the ONE.UF client, not the raw payload."
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Section"
+          }
+        }
+      }
+    },
+    "Section": {
+      "type": "object",
+      "required": [
+        "number",
+        "classNumber",
+        "display",
+        "credits",
+        "deptCode",
+        "deptName"
+      ],
+      "properties": {
+        "number": {
+          "type": "string",
+          "description": "Section number, e.g. APP1."
+        },
+        "classNumber": {
+          "type": "integer",
+          "description": "Five-digit registration class number."
+        },
+        "isStartDate45DaysOut": {
+          "type": "boolean"
+        },
+        "simpleSyllabusParams": {
+          "type": "string",
+          "description": "Opaque key for the Simple Syllabus integration, e.g. \"Spring 2025/ABE//10101\"."
+        },
+        "gradBasis": {
+          "type": "string",
+          "description": "Grading basis, e.g. GRD, SU."
+        },
+        "acadCareer": {
+          "type": "string",
+          "description": "Academic career, e.g. UGRD, GRAD."
+        },
+        "display": {
+          "type": "string",
+          "description": "Abbreviated section title as shown in ONE.UF."
+        },
+        "credits": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "credits_min": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "credits_max": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "dNote": {
+          "type": "string",
+          "description": "Department note."
+        },
+        "genEd": {
+          "type": "array",
+          "description": "General Education designations carried by this section.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quest": {
+          "type": "array",
+          "description": "UF Quest designations.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sectWeb": {
+          "type": "string",
+          "description": "Delivery code, e.g. PC (primarily classroom), HB (hybrid), AD, PD."
+        },
+        "rotateTitle": {
+          "type": "string"
+        },
+        "deptCode": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "deptName": {
+          "type": "string"
+        },
+        "openSeats": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "courseFee": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "lateFlag": {
+          "type": "string",
+          "enum": [
+            "Y",
+            "N"
+          ]
+        },
+        "EEP": {
+          "type": "string",
+          "enum": [
+            "Y",
+            "N"
+          ],
+          "description": "Employee Education Program eligible."
+        },
+        "LMS": {
+          "type": "string",
+          "description": "Learning management system indicator; often empty."
+        },
+        "instructors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "meetTimes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MeetTime"
+          }
+        },
+        "addEligible": {
+          "type": "string",
+          "enum": [
+            "Y",
+            "N"
+          ]
+        },
+        "grWriting": {
+          "type": "string",
+          "enum": [
+            "Y",
+            "N"
+          ],
+          "description": "Gordon Rule writing."
+        },
+        "finalExam": {
+          "type": "string"
+        },
+        "dropaddDeadline": {
+          "type": "string",
+          "description": "MM/DD/YYYY."
+        },
+        "pastDeadline": {
+          "type": "boolean"
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "endDate": {
+          "type": "string"
+        },
+        "waitList": {
+          "$ref": "#/$defs/WaitList"
+        }
+      }
+    },
+    "MeetTime": {
+      "type": "object",
+      "properties": {
+        "meetNo": {
+          "type": "integer"
+        },
+        "meetDays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "M, T, W, R, F, S."
+          }
+        },
+        "meetTimeBegin": {
+          "type": "string"
+        },
+        "meetTimeEnd": {
+          "type": "string"
+        },
+        "meetPeriodBegin": {
+          "type": "string"
+        },
+        "meetPeriodEnd": {
+          "type": "string"
+        },
+        "meetBuilding": {
+          "type": "string"
+        },
+        "meetBldgCode": {
+          "type": "string"
+        },
+        "meetRoom": {
+          "type": "string"
+        }
+      }
+    },
+    "WaitList": {
+      "type": "object",
+      "properties": {
+        "isEligible": {
+          "type": "string",
+          "enum": [
+            "Y",
+            "N"
+          ]
+        },
+        "cap": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "Filters": {
+      "type": "object",
+      "required": [
+        "categories",
+        "progLevels",
+        "terms",
+        "departments"
+      ],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CodeDesc"
+          }
+        },
+        "progLevels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CodeDesc"
+          }
+        },
+        "terms": {
+          "type": "array",
+          "description": "Observed 49 terms on 2026-09-01, newest first.",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/CodeDesc"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "SORT_TERM": {
+                    "type": "integer"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "departments": {
+          "type": "array",
+          "description": "Observed 203 departments on 2026-09-01.",
+          "items": {
+            "$ref": "#/$defs/CodeDesc"
+          }
+        }
+      }
+    },
+    "CodeDesc": {
+      "type": "object",
+      "required": [
+        "CODE",
+        "DESC"
+      ],
+      "properties": {
+        "CODE": {
+          "type": "string"
+        },
+        "DESC": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "object",
+          "required": [
+            "title",
+            "description",
+            "message"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Short classification, e.g. \"Resource not found\"."
+            },
+            "description": {
+              "type": "string",
+              "description": "Machine-ish cause, e.g. \"Invalid term\"."
+            },
+            "message": {
+              "type": "string",
+              "description": "Human-facing apology string."
+            }
+          }
+        }
+      }
+    }
+  }
+}

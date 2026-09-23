@@ -1,0 +1,637 @@
+openapi: 3.1.0
+info:
+  title: University of Florida Libraries Patron API
+  version: '2026-09-01'
+  summary: >-
+    Public, unauthenticated read API over the University of Florida Digital Collections,
+    the Digital Library of the Caribbean and the Florida Digital Newspaper Library.
+  description: |
+    `api.patron.uflib.ufl.edu` is the backend of the UF Digital Collections reader at
+    ufdc.ufl.edu. It is operated by the George A. Smathers Libraries at the University of
+    Florida: the host resolves to 128.227.18.113 / 128.227.24.223 inside UFNET
+    (128.227.0.0/16, ARIN OrgName "University of Florida"), under an InCommon RSA Server
+    CA 2 certificate. There is no CNAME to a repository vendor, and nothing in the
+    payloads names a third-party product — this is not a Figshare, DSpace, EPrints,
+    Dataverse or Pure tenancy dressed in a UF hostname. UF Libraries wrote it.
+
+    It is also self-documenting: the root returns a machine-readable index of every
+    resource, and each resource root returns worked example URLs for its own parameters.
+    That is where this contract came from. UF publishes no OpenAPI, no developer portal
+    and no terms of use for it; the UF Library Technology Services page describes an
+    OpenAPI/Swagger interface as forthcoming.
+
+    Correction recorded by this profile: the legacy SobekCM OAI-PMH path at
+    `ufdc.ufl.edu/sobekcm_oai.aspx` is DEAD — it returns HTTP 200 carrying the React
+    single-page-app shell, a soft-404. The live, standards-conformant OAI-PMH 2.0
+    repository is `GET /oai` on this host, verified by an `Identify` response naming
+    repository "University of Florida Digital Collections", repositoryIdentifier `UFDC`,
+    protocolVersion 2.0, earliestDatestamp 2007-08-07, formats `oai_dc` and MODS 3.7.
+  contact:
+    name: UF Digital Library Center
+    email: digby@ufl.edu
+    url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+  x-operator: institution
+  x-operator-basis: >-
+    api.patron.uflib.ufl.edu -> 128.227.18.113, 128.227.24.223; ARIN NetName UFNET,
+    OrgName "University of Florida", CIDR 128.227.0.0/16. No vendor CNAME. TLS issuer
+    "C=US, O=Internet2, CN=InCommon RSA Server CA 2". The OAI-PMH Identify response names
+    UF as the repository and digby@ufl.edu as adminEmail. No vendor product string appears
+    in any probed response.
+  x-provenance:
+    generated: '2026-09-01'
+    method: derived
+    source: >-
+      Live HTTP probes of every resource named in the root index of
+      https://api.patron.uflib.ufl.edu on 2026-09-01, plus the self-documenting example
+      URLs each resource root returns. The host itself was discovered by reading
+      https://ufdc.ufl.edu/assets/environment-CtcEkdJa.js, the UFDC client's build-time
+      environment module.
+servers:
+  - url: https://api.patron.uflib.ufl.edu
+    description: |-
+      Production. Public and unauthenticated; no API key is issued or required.
+
+      WARNING — the hostname resolves to TWO A records that do not serve the same routes.
+      128.227.18.113 serves every resource. 128.227.24.223 serves every resource EXCEPT
+      /oai and /oai_by_title, which it returns 404 for. Verified 2026-09-01 by pinning
+      each address with --resolve and replaying all nine sampled routes against both. See
+      `x-node-divergence`.
+x-node-divergence:
+  observed: '2026-09-01'
+  method: probed
+  hosts:
+    - address: 128.227.18.113
+      routes_ok: all sampled
+    - address: 128.227.24.223
+      routes_404: ['/oai', '/oai_by_title']
+      routes_ok: ['/', '/types', '/exactsearch', '/recent_additions', '/rss_ufdc', '/collections', '/fdnl_titles_list']
+  impact: >-
+    An OAI-PMH harvester that resolves onto the second node receives HTTP 404 and
+    concludes the repository has been withdrawn. Which node answers is a DNS ordering
+    accident, so the failure is intermittent and will not reproduce on a retry that lands
+    on the other address. This is deployment drift between two backends, not a
+    deliberate partition — every other route is served identically by both.
+tags:
+  - name: Discovery
+    description: Root index and controlled vocabularies.
+  - name: Search
+    description: Full-text, exact, geospatial and page-level search.
+  - name: Item
+    description: Per-item citation, downloads and volume enumeration.
+  - name: Harvest
+    description: OAI-PMH and RSS harvesting surfaces.
+  - name: Analytics
+    description: Public view statistics.
+paths:
+  /:
+    get:
+      tags: [Discovery]
+      operationId: getRootIndex
+      summary: Machine-readable index of every resource
+      description: >-
+        Returns a flat object mapping resource name to absolute URL. Seventeen resources
+        observed on 2026-09-01.
+      responses:
+        '200':
+          description: Resource index.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: { type: string, format: uri }
+  /exactsearch:
+    get:
+      tags: [Search]
+      operationId: exactSearch
+      summary: Search items across the digital collections
+      description: >-
+        Called with no parameters, returns worked example URLs for itself. Called with
+        parameters, returns a hit list with facet buckets. Quote the `default` value to
+        force phrase matching.
+      parameters:
+        - name: default
+          in: query
+          description: 'Free-text query; wrap in double quotes for an exact phrase.'
+          schema: { type: string, examples: ['"elmer h. bone"'] }
+        - name: subject_keyword
+          in: query
+          description: Restrict to a subject keyword.
+          schema: { type: string }
+        - name: datelo
+          in: query
+          description: Earliest publication date, YYYY-MM-DD.
+          schema: { type: string, format: date }
+        - name: datehi
+          in: query
+          description: Latest publication date, YYYY-MM-DD.
+          schema: { type: string, format: date }
+        - name: filter
+          in: query
+          description: 'Facet filter in `field:value` form, e.g. `genre:novel`.'
+          schema: { type: string }
+      responses:
+        '200':
+          description: Hits plus facet buckets.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SearchResult' }
+  /pagetext:
+    get:
+      tags: [Search]
+      operationId: searchPageText
+      summary: Full-text search inside digitised page images
+      description: >-
+        Searches the OCR text of scanned pages. Scope narrows from the whole corpus to a
+        single serial (`bibid`) to a single volume (`bibid` + `vid`).
+      parameters:
+        - name: term
+          in: query
+          description: Single term to match.
+          schema: { type: string }
+        - name: fuzzy
+          in: query
+          description: Fuzzy-match the term.
+          schema: { type: boolean }
+        - name: phrase
+          in: query
+          description: Multi-word phrase to match.
+          schema: { type: string }
+        - name: bibid
+          in: query
+          description: Restrict to one bibliographic record.
+          schema: { type: string, examples: ['UF00028290'] }
+        - name: vid
+          in: query
+          description: Restrict to one volume within the bibid.
+          schema: { type: string, examples: ['00001'] }
+      responses:
+        '200':
+          description: Matching pages.
+          content:
+            application/json:
+              schema: { type: object }
+  /mapsearch:
+    get:
+      tags: [Search]
+      operationId: mapSearch
+      summary: Geospatial search over georeferenced items
+      parameters:
+        - name: mapsearchtype
+          in: query
+          required: true
+          description: Bounding-box or radius search.
+          schema: { type: string, enum: [box, point] }
+        - name: minlat
+          in: query
+          schema: { type: number }
+        - name: maxlat
+          in: query
+          schema: { type: number }
+        - name: minlng
+          in: query
+          schema: { type: number }
+        - name: maxlng
+          in: query
+          schema: { type: number }
+        - name: pointlat
+          in: query
+          schema: { type: number }
+        - name: pointlng
+          in: query
+          schema: { type: number }
+        - name: maxdist
+          in: query
+          description: 'Radius with unit suffix, e.g. `1km`, `10km`.'
+          schema: { type: string }
+        - name: aggregationcodes
+          in: query
+          description: Restrict to a collection aggregation code.
+          schema: { type: string }
+        - name: mediatype
+          in: query
+          description: 'Restrict to a media type, e.g. `Photograph`.'
+          schema: { type: string }
+      responses:
+        '200':
+          description: Georeferenced hits.
+          content:
+            application/json:
+              schema: { type: object }
+  /collections:
+    get:
+      tags: [Discovery]
+      operationId: listCollections
+      summary: List collections, or one collection
+      parameters:
+        - name: coll
+          in: query
+          description: '`all` for every collection, or a collection code such as `maps` or `aerials`.'
+          schema: { type: string }
+      responses:
+        '200':
+          description: Collection descriptions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Collection' }
+  /types:
+    get:
+      tags: [Discovery]
+      operationId: listTypes
+      summary: Media types with live item counts
+      responses:
+        '200':
+          description: Media types.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CountedFacet' }
+  /publishers:
+    get:
+      tags: [Discovery]
+      operationId: listPublishers
+      summary: Publishers with live item counts
+      responses:
+        '200':
+          description: Publishers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CountedFacet' }
+  /serialtitles:
+    get:
+      tags: [Search]
+      operationId: searchSerialTitles
+      summary: Search serial titles
+      parameters:
+        - name: title
+          in: query
+          schema: { type: string, examples: ['leader'] }
+      responses:
+        '200':
+          description: Matching serial titles.
+          content:
+            application/json:
+              schema: { type: object }
+  /serialhierarchy:
+    get:
+      tags: [Item]
+      operationId: getSerialHierarchy
+      summary: Volume/issue hierarchy for one serial
+      parameters:
+        - name: bibid
+          in: query
+          required: true
+          schema: { type: string, examples: ['UF00081789'] }
+      responses:
+        '200':
+          description: Serial hierarchy.
+          content:
+            application/json:
+              schema: { type: object }
+  /all_vids_in_bibid:
+    get:
+      tags: [Item]
+      operationId: listVolumes
+      summary: Enumerate every volume under one bibliographic record
+      parameters:
+        - name: bibid
+          in: query
+          required: true
+          schema: { type: string, examples: ['UF00094730'] }
+        - name: start
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Volumes.
+          content:
+            application/json:
+              schema: { type: object }
+  /{bibid}/{vid}/citation:
+    get:
+      tags: [Item]
+      operationId: getCitation
+      summary: Full descriptive metadata for one item
+      description: >-
+        MODS-derived descriptive metadata: title, creators, genre, subjects with
+        authority, language, PDF filename, ETD block.
+      parameters:
+        - name: bibid
+          in: path
+          required: true
+          schema: { type: string, examples: ['UF00078891'] }
+        - name: vid
+          in: path
+          required: true
+          schema: { type: string, examples: ['00001'] }
+      responses:
+        '200':
+          description: Item citation.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Citation' }
+  /{bibid}/{vid}/downloads:
+    get:
+      tags: [Item]
+      operationId: getDownloads
+      summary: Downloadable renditions for one item
+      parameters:
+        - name: bibid
+          in: path
+          required: true
+          schema: { type: string }
+        - name: vid
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Available downloads.
+          content:
+            application/json:
+              schema: { type: object }
+  /recent_additions:
+    get:
+      tags: [Discovery]
+      operationId: getRecentAdditions
+      summary: Most recently published items
+      responses:
+        '200':
+          description: Recent items, same hit shape as search.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SearchResult' }
+  /fdnl_titles_list:
+    get:
+      tags: [Discovery]
+      operationId: listFdnlTitles
+      summary: Florida Digital Newspaper Library title list
+      description: >-
+        Every FDNL newspaper title with its county and geographic coordinates. Effectively
+        an open dataset of Florida newspaper publishing history.
+      responses:
+        '200':
+          description: FDNL titles.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/FdnlTitle' }
+  /stats:
+    get:
+      tags: [Analytics]
+      operationId: getStats
+      summary: Public view statistics
+      description: >-
+        Called with no parameters, returns worked example URLs. Each named parameter
+        selects a different report; they are used as flags or as keyed lookups.
+      parameters:
+        - name: bibid
+          in: query
+          description: Per-volume view counts for one bibid.
+          schema: { type: string }
+        - name: item
+          in: query
+          description: 'View count for one item, `BIBID_VID`.'
+          schema: { type: string, examples: ['UF00086443_00002'] }
+        - name: overview
+          in: query
+          description: Overview for one collection code.
+          schema: { type: string }
+        - name: view_history_bibid
+          in: query
+          schema: { type: string }
+        - name: view_history_collection
+          in: query
+          schema: { type: string }
+        - name: top_bibids
+          in: query
+          description: Flag; present with no value.
+          schema: { type: string }
+        - name: top_bibids_by_portal
+          in: query
+          description: Flag; present with no value.
+          schema: { type: string }
+        - name: main_page_stats
+          in: query
+          description: Flag; present with no value.
+          schema: { type: string }
+      responses:
+        '200':
+          description: Statistics.
+          content:
+            application/json:
+              schema: { type: array, items: { type: object } }
+  /oai:
+    get:
+      tags: [Harvest]
+      operationId: oaiPmh
+      summary: OAI-PMH 2.0 repository interface
+      description: |
+        A conformant OAI-PMH 2.0 repository for the University of Florida Digital
+        Collections. Verified 2026-09-01: repositoryName "University of Florida Digital
+        Collections", repositoryIdentifier `UFDC`, delimiter `:`, sampleIdentifier
+        `oai:UFDC:UF00078891_00001`, adminEmail digby@ufl.edu, earliestDatestamp
+        2007-08-07, deletedRecord `transient`, granularity `YYYY-MM-DD`.
+
+        Metadata formats: `oai_dc` (Dublin Core) and `mods` (MODS 3.7).
+
+        This replaces the dead `ufdc.ufl.edu/sobekcm_oai.aspx` path.
+      parameters:
+        - name: verb
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [Identify, ListMetadataFormats, ListSets, ListIdentifiers, ListRecords, GetRecord]
+        - name: metadataPrefix
+          in: query
+          schema: { type: string, enum: [oai_dc, mods] }
+        - name: identifier
+          in: query
+          schema: { type: string, examples: ['oai:UFDC:UF00078891_00001'] }
+        - name: set
+          in: query
+          schema: { type: string }
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: until
+          in: query
+          schema: { type: string, format: date }
+        - name: resumptionToken
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: >-
+            OAI-PMH XML envelope. Protocol errors are carried INSIDE a 200 response as an
+            `<error code="...">` element, per OAI-PMH 2.0 — not as an HTTP status.
+          content:
+            text/xml:
+              schema: { type: string }
+  /oai_by_title:
+    get:
+      tags: [Harvest]
+      operationId: oaiPmhByTitle
+      summary: OAI-PMH 2.0 interface set-partitioned by title
+      parameters:
+        - name: verb
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OAI-PMH XML envelope.
+          content:
+            text/xml:
+              schema: { type: string }
+  /rss:
+    get:
+      tags: [Harvest]
+      operationId: listRssFeeds
+      summary: Index of the available RSS feeds
+      responses:
+        '200':
+          description: 'Feed index — UFDC, DLOC and FDNL.'
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: { type: string } }
+  /rss_ufdc:
+    get:
+      tags: [Harvest]
+      operationId: getUfdcRss
+      summary: RSS feed for UF Digital Collections
+      responses:
+        '200':
+          description: RSS XML.
+          content:
+            application/rss+xml:
+              schema: { type: string }
+  /rss_dloc:
+    get:
+      tags: [Harvest]
+      operationId: getDlocRss
+      summary: RSS feed for the Digital Library of the Caribbean
+      responses:
+        '200':
+          description: RSS XML.
+          content:
+            application/rss+xml:
+              schema: { type: string }
+  /rss_fdnl:
+    get:
+      tags: [Harvest]
+      operationId: getFdnlRss
+      summary: RSS feed for the Florida Digital Newspaper Library
+      responses:
+        '200':
+          description: RSS XML.
+          content:
+            application/rss+xml:
+              schema: { type: string }
+components:
+  schemas:
+    SearchResult:
+      type: object
+      required: [hits]
+      properties:
+        query: { type: ['string', 'object'] }
+        hit_count: { type: integer }
+        filter_buckets:
+          type: object
+          description: Facet counts keyed by field.
+        hits:
+          type: array
+          items: { $ref: '#/components/schemas/Hit' }
+        ip:
+          type: string
+          description: >-
+            The API echoes the CALLER's own IP address back in this field. It is not
+            institutional data and must not be stored in a catalogued example.
+    Hit:
+      type: object
+      properties:
+        did: { type: string, description: '`BIBID:VID`.' }
+        bibid: { type: string }
+        vid: { type: string }
+        title: { type: string }
+        mediatype: { type: string }
+        aggregationcodes: { type: array, items: { type: string } }
+        mainthumbnail: { type: string }
+        mainjpeg: { type: string }
+        pagecount: { type: integer }
+        language: { type: array, items: { type: string } }
+        creator: { type: array, items: { type: string } }
+        subject_keyword: { type: array, items: { type: string } }
+        genre: { type: array, items: { type: string } }
+        source_institution: { type: string }
+        holding_location: { type: string }
+        publication_date: { type: string }
+        conv_date: { type: string, description: 'Normalised date, YYYY-MM-DD.' }
+        collections: { type: array, items: { type: string } }
+        general_note: { type: array, items: { type: string } }
+        ip_restriction_mask: { type: ['integer', 'string'] }
+        made_public_date: { type: string }
+        hit_reason: { type: ['string', 'array', 'object'] }
+    Collection:
+      type: object
+      properties:
+        code: { type: string }
+        name: { type: string }
+        shortname: { type: string }
+        description: { type: string, description: 'HTML.' }
+    CountedFacet:
+      type: object
+      properties:
+        name: { type: string }
+        current_item_count: { type: integer }
+        es_keyword: { type: string, description: 'Underlying search-index keyword.' }
+    FdnlTitle:
+      type: object
+      properties:
+        bibid: { type: string }
+        vid: { type: string }
+        title: { type: string }
+        coordinates: { type: array, items: { type: string, description: '"lat,lng".' } }
+        county: { type: string }
+        vids_per_bibid: { type: integer }
+        min_date: { type: ['string', 'null'] }
+        max_date: { type: ['string', 'null'] }
+    Citation:
+      type: object
+      properties:
+        Title: { type: string }
+        Creators:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              role: { type: string }
+        Language: { type: string }
+        genre:
+          type: array
+          items:
+            type: object
+            properties:
+              text: { type: string }
+              authority: { type: string, description: 'e.g. aat, rbgenr, marcgt.' }
+        subjects:
+          type: array
+          items:
+            type: object
+            properties:
+              subject_string: { type: string }
+              subject_fields: { type: object }
+        item_pdf: { type: string }
+        scale: { type: ['string', 'null'] }
+        edition: { type: ['string', 'null'] }
+        etd: { type: ['object', 'null'], description: 'Electronic thesis/dissertation block.' }

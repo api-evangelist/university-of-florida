@@ -1,0 +1,79 @@
+specification: API Evangelist Authentication
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+generated: '2026-09-01'
+method: probed
+source: >-
+  Live unauthenticated requests to https://one.ufl.edu/apix/soc/schedule/,
+  https://one.ufl.edu/apix/soc/filters/ and every resource under
+  https://api.patron.uflib.ufl.edu on 2026-09-01, sent with no Authorization header, no
+  cookie and no API key, plus inspection of every response header returned.
+description: >-
+  Both institution-operated University of Florida APIs are entirely unauthenticated. No
+  API key is issued, no registration exists, no developer portal exists, and no
+  Authorization, WWW-Authenticate or rate-limit header appears on any response. This is
+  not "auth is undocumented" — it is "there is no auth", verified by successfully reading
+  real data with no credential of any kind.
+
+  That has a consequence worth stating plainly: an agent can consume both APIs today with
+  zero onboarding, and UF has no mechanism to identify, throttle or revoke any consumer.
+
+apis:
+- name: UF Schedule of Courses (SOC) API
+  baseURL: https://one.ufl.edu/apix/soc
+  x-operator: institution
+  authentication:
+    required: false
+    type: none
+    verified:
+      url: https://one.ufl.edu/apix/soc/schedule/?term=2268&last-control-number=0
+      status: 200
+      sent_credentials: none
+      note: 'Returned 4,624 Fall 2026 course rows with no credential.'
+  registration:
+    required: false
+    portal: none
+    note: 'No developer portal, no key issuance, no application process discovered.'
+  authorization:
+    scopes: none
+    note: 'No scope, tier or entitlement model. Every consumer sees the same public data.'
+
+- name: UF Libraries Patron API
+  baseURL: https://api.patron.uflib.ufl.edu
+  x-operator: institution
+  authentication:
+    required: false
+    type: none
+    verified:
+      url: https://api.patron.uflib.ufl.edu/types
+      status: 200
+      sent_credentials: none
+  registration:
+    required: false
+    portal: none
+  authorization:
+    scopes: none
+    note: >-
+      Records carry an `ip_restriction_mask` field, so the corpus DOES model
+      access restriction per item — but enforcement is by caller IP, not by any credential
+      the consumer presents. There is no way for a consumer to authenticate in order to
+      widen access.
+
+institutional_authentication:
+  note: >-
+    UF's enterprise authentication is GatorLink, fronted by a self-hosted Shibboleth
+    Identity Provider at https://login.ufl.edu/idp/shibboleth, registered in InCommon and
+    interfederated into eduGAIN. It is SAML 2.0 and SAML 1.1, and it is the authentication
+    surface for UF's gated systems — including data.ufl.edu, which redirects an
+    unauthenticated caller straight to the Web Login Service. It is NOT an API
+    authentication mechanism for either public API above, and it does not issue tokens to
+    third-party developers. Documented in identity-federation/.
+  entityID: https://login.ufl.edu/idp/shibboleth
+  protocols: [SAML 2.0, SAML 1.1, Shibboleth 1.0]
+  x-operator: institution
+
+gaps:
+- 'No OAuth 2.0, OIDC or API-key surface is published for either public API.'
+- 'No .well-known/oauth-protected-resource, no RFC 9728 metadata, no dynamic client registration.'
+- 'No terms of use, acceptable-use policy or attribution requirement is published for either API.'

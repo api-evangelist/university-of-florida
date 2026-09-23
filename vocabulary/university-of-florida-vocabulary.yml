@@ -1,0 +1,158 @@
+specification: API Evangelist Vocabulary
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+generated: '2026-09-01'
+method: probed
+x-operator: institution
+source: >-
+  Controlled vocabularies read directly from https://one.ufl.edu/apix/soc/filters/ (HTTP
+  200, 2026-09-01), from https://api.patron.uflib.ufl.edu/types and /publishers, and from
+  the OAI-PMH ListMetadataFormats response at https://api.patron.uflib.ufl.edu/oai. Every
+  term below is enumerated by a UF endpoint; none is inferred.
+description: >-
+  The domain vocabulary an agent needs in order to call either institution-operated
+  University of Florida API correctly. The SOC API in particular is unusable without it:
+  `term`, `dept`, `category` and `prog-level` are all opaque codes, and sending an
+  unrecognised value returns HTTP 200 with an empty result set rather than an error.
+
+schedule_of_courses:
+  source_endpoint: https://one.ufl.edu/apix/soc/filters/
+  refresh: 'Re-read at call time; UF adds a term each cycle. 49 terms present 2026-09-01.'
+  term:
+    description: >-
+      Four-digit PeopleSoft-style term code. Reads as C-YY-M where C is century (2 = 2000s),
+      YY is the two-digit year, and M is the term month (1 = Spring, 5 = Summer, 8 = Fall).
+      Summer sub-terms append a suffix: `1` for Summer C, `6W1` for Summer A, `6W2` for
+      Summer B.
+    examples:
+      - { code: '2268', label: 'Fall 2026' }
+      - { code: '2265', label: 'Summer 2026' }
+      - { code: '22651', label: 'Summer C 2026' }
+      - { code: '22656W1', label: 'Summer A 2026' }
+      - { code: '22656W2', label: 'Summer B 2026' }
+      - { code: '2261', label: 'Spring 2026' }
+    sort_key: 'SORT_TERM — an integer that collapses the summer sub-terms onto the parent term.'
+  category:
+    description: Program category. Complete, 3 values.
+    values:
+      - { code: CWSP, label: 'Campus / Web / Special Program' }
+      - { code: UFOL, label: 'UF Online Program' }
+      - { code: IA, label: 'Innovation Academy' }
+    note: >-
+      The value `RES` (residential) is accepted by GET /schedule and returns results, but
+      is NOT listed by GET /filters. Recorded because the catalog's earlier profile used
+      it; an agent enumerating strictly from /filters would never find it.
+  prog_level:
+    description: Academic program level. Complete, 8 values.
+    values:
+      - { code: UGRD, label: Undergraduate }
+      - { code: GRAD, label: Graduate }
+      - { code: LAW, label: Law }
+      - { code: MED, label: 'Medical School' }
+      - { code: PHM, label: Pharmacy }
+      - { code: PA, label: 'Physician Assistant' }
+      - { code: PROF, label: Professional }
+      - { code: VEM, label: 'Veterinary Medicine' }
+  department:
+    description: >-
+      Eight-digit department code. 203 departments enumerated 2026-09-01. Not derivable —
+      must be read from /filters.
+    examples:
+      - { code: '17030000', label: 'Accounting, Fisher School of' }
+      - { code: '60070000', label: 'Agricultural and Biological Engineering' }
+  meeting_days:
+    description: Single-letter day codes used in `section.meetTimes[].meetDays` and the `day-*` filters.
+    values:
+      - { code: M, label: Monday, parameter: day-m }
+      - { code: T, label: Tuesday, parameter: day-t }
+      - { code: W, label: Wednesday, parameter: day-w }
+      - { code: R, label: Thursday, parameter: day-r }
+      - { code: F, label: Friday, parameter: day-f }
+      - { code: S, label: Saturday, parameter: day-s }
+    note: 'R for Thursday and S for Saturday are the university convention; T is Tuesday, not Thursday.'
+  general_education:
+    description: >-
+      UF General Education subject areas, exposed as boolean `ge-*` filters and echoed in
+      `section.genEd[]`. Letters verified against Fall 2026 result counts.
+    values:
+      - { parameter: ge-b, label: 'Biological Sciences' }
+      - { parameter: ge-c, label: Composition }
+      - { parameter: ge-d, label: Diversity }
+      - { parameter: ge-h, label: Humanities }
+      - { parameter: ge-m, label: Mathematics }
+      - { parameter: ge-n, label: International }
+      - { parameter: ge-p, label: 'Physical Sciences' }
+      - { parameter: ge-s, label: 'Social and Behavioral Sciences' }
+  ai_designation:
+    parameter: ai
+    description: >-
+      UF's Artificial Intelligence curriculum designation, filterable as a first-class
+      parameter on the course search. 138 of 4,624 Fall 2026 courses carry it (3.0%).
+      Notable: UF is one of very few institutions in this cohort whose course API exposes
+      an AI-curriculum flag as a queryable dimension at all.
+  delivery_code:
+    field: section.sectWeb
+    values:
+      - { code: PC, label: 'Primarily classroom' }
+      - { code: HB, label: Hybrid }
+      - { code: AD, label: 'All distance' }
+      - { code: PD, label: 'Primarily distance' }
+    note: 'Filter equivalents are online-a / online-c / online-h / online-p; the mapping between letter and code is not published by UF.'
+  grading_basis:
+    field: section.gradBasis
+    observed: [GRD, SU]
+    note: 'Not enumerated by /filters; observed values only.'
+  academic_career:
+    field: section.acadCareer
+    note: 'Mirrors prog_level codes.'
+
+libraries_patron_api:
+  source_endpoints:
+    - https://api.patron.uflib.ufl.edu/types
+    - https://api.patron.uflib.ufl.edu/publishers
+    - https://api.patron.uflib.ufl.edu/collections?coll=all
+  identifiers:
+    bibid:
+      description: >-
+        Bibliographic record identifier. Two-letter prefix plus eight digits. The prefix
+        signals the source system — `UF` for University of Florida records, `AA` for
+        aggregated/partner records, `WL` for another partner series.
+      examples: ['UF00078891', 'AA00069139', 'WL00004716']
+    vid:
+      description: 'Five-digit zero-padded volume identifier within a bibid.'
+      examples: ['00001', '00093']
+    did:
+      description: 'Composite document identifier, `BIBID:VID`.'
+      examples: ['UF00046984:00001']
+    oai_identifier:
+      description: 'OAI-PMH identifier form.'
+      pattern: 'oai:UFDC:{BIBID}_{VID}'
+      examples: ['oai:UFDC:UF00078891_00001']
+  mediatype:
+    description: >-
+      Item media type, with a live item count per value. Note the vocabulary is NOT
+      normalised — `newspaper` and `Newspapers` are separate values with separate counts
+      (792,345 and 172,327 on 2026-09-01), because each maps to a distinct underlying
+      search-index keyword. An agent aggregating by media type must fold these itself.
+    observed: [newspaper, Newspapers, periodical, serial, Photograph, Serial]
+  aggregationcodes:
+    description: >-
+      Collection membership codes. An item belongs to many. `all` is the universal code.
+    examples: [all, maps, aerials, bone, uapc, judaica, iufjudaica, dlosa1, jdocla, 3d]
+  oai_metadata_formats:
+    - { prefix: oai_dc, namespace: 'http://www.openarchives.org/OAI/2.0/oai_dc/', schema: 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd' }
+    - { prefix: mods, namespace: 'http://www.loc.gov/mods/v3', schema: 'http://www.loc.gov/standards/mods/v3/mods-3-7.xsd' }
+  subject_authorities:
+    description: 'Authority codes carried on citation subjects and genres.'
+    observed:
+      - { code: lcsh, label: 'Library of Congress Subject Headings' }
+      - { code: aat, label: 'Getty Art & Architecture Thesaurus' }
+      - { code: rbgenr, label: 'Rare Books Genre Terms' }
+      - { code: marcgt, label: 'MARC Genre Terms' }
+  portals:
+    description: 'Three public portals share this API and each has its own RSS feed.'
+    values:
+      - { code: ufdc, label: 'University of Florida Digital Collections' }
+      - { code: dloc, label: 'Digital Library of the Caribbean' }
+      - { code: fdnl, label: 'Florida Digital Newspaper Library' }

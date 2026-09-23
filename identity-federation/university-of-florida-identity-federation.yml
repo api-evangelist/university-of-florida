@@ -1,0 +1,130 @@
+specification: API Evangelist Identity Federation
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+generated: '2026-09-01'
+method: probed
+source: >-
+  Per-entity fetch of the InCommon Metadata Query service at
+  https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
+  (HTTP 200, 9,022 bytes, signed SAML 2.0 EntityDescriptor), archived locally at
+  identity-federation/university-of-florida-idp-incommon-metadata.xml; a direct fetch of
+  https://login.ufl.edu/idp/shibboleth (HTTP 200); and DNS + ARIN whois + TLS issuer
+  resolution of login.ufl.edu, to settle who operates the thing the metadata describes.
+description: >-
+  The University of Florida's SAML 2.0 Identity Provider, registered in InCommon, the
+  United States research-and-education identity federation, and interfederated into
+  eduGAIN. This is the strongest machine-readable contract the University of Florida
+  publishes about itself, and unlike almost every other surface in this profile there is
+  no question of vendor attribution: the operator check is unambiguous.
+
+  Operator was settled by IP ownership and certificate provenance, not by hostname —
+  the check that inverted the answer for Monash and Melbourne, whose institution-branded
+  IdPs turned out to be federation-managed SaaS on Amazon address space. It does not
+  invert here. login.ufl.edu resolves to 128.227.9.67 with NO CNAME, inside
+  128.227.0.0/16, ARIN NetName UFNET, OrgName "University of Florida", and terminates on
+  an Internet2/InCommon RSA Server CA 2 certificate that UF procures through its own
+  InCommon membership. UF runs its own Shibboleth IdP on its own hardware.
+
+  Recorded as an institution-operated surface. A federation is shared by definition; the
+  IdP behind the entry is the institution's own.
+
+federation:
+  name: InCommon Federation
+  operator: Internet2
+  metadata_query_service: https://mdq.incommon.org/entities/
+  signing_certificate: https://spaces.at.internet2.edu/display/federation/inc-md-cert-mdq
+  interfederation: eduGAIN
+  probed: '2026-09-01'
+  status: 200
+
+identity_provider:
+  entityID: https://login.ufl.edu/idp/shibboleth
+  x-operator: institution
+  operator_basis: >-
+    login.ufl.edu -> 128.227.9.67 with no CNAME. ARIN: NetRange 128.227.0.0 -
+    128.227.255.255, CIDR 128.227.0.0/16, NetName UFNET, OrgName "University of Florida"
+    (UNIVER-27-Z). TLS issuer "C=US, O=Internet2, CN=InCommon RSA Server CA 2" — a
+    certificate UF obtains under its own InCommon membership, not one issued by a hosting
+    provider. Same allocation and same certificate authority as one.ufl.edu and
+    api.patron.uflib.ufl.edu, the two APIs this profile credits to UF. Self-hosted.
+  metadata:
+    per_entity_url: https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
+    status: 200
+    bytes: 9022
+    signed: true
+    signature_algorithm: http://www.w3.org/2001/04/xmldsig-more#rsa-sha256
+    local_copy: identity-federation/university-of-florida-idp-incommon-metadata.xml
+    validUntil_observed: '2026-09-15T19:37:27.181Z'
+  protocols_supported:
+    - urn:oasis:names:tc:SAML:2.0:protocol
+    - urn:oasis:names:tc:SAML:1.1:protocol
+    - urn:mace:shibboleth:1.0
+  software: Shibboleth Identity Provider
+  scope: ufl.edu
+  scope_regexp: false
+  organization:
+    name: University of Florida
+    display_name: University of Florida
+    url: http://www.ufl.edu/
+  mdui:
+    display_name: University of Florida
+    description: University of Florida - GatorLink Credentials
+    information_url: http://helpdesk.ufl.edu/getting-help-for-gatorlink-log-in-issues/
+    logo: https://images.webadmin.ufl.edu/signatures/wordmark.gif
+  error_url: https://login.ufl.edu/error.html
+  endpoints:
+    single_sign_on:
+      - binding: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+        location: https://login.ufl.edu/idp/profile/SAML2/POST/SSO
+      - binding: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect
+        location: https://login.ufl.edu/idp/profile/SAML2/Redirect/SSO
+      - binding: urn:mace:shibboleth:1.0:profiles:AuthnRequest
+        location: https://login.ufl.edu/idp/profile/Shibboleth/SSO
+    artifact_resolution:
+      - binding: urn:oasis:names:tc:SAML:2.0:bindings:SOAP
+        location: https://login.ufl.edu/idp/profile/SAML2/SOAP/ArtifactResolution
+        index: 1
+      - binding: urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding
+        location: https://login.ufl.edu/idp/profile/SAML1/SOAP/ArtifactResolution
+        index: 2
+    attribute_query:
+      - binding: urn:oasis:names:tc:SAML:2.0:bindings:SOAP
+        location: https://login.ufl.edu:8443/idp/profile/SAML2/SOAP/AttributeQuery
+      - binding: urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding
+        location: https://login.ufl.edu:8443/idp/profile/SAML1/SOAP/AttributeQuery
+  entity_categories:
+    - id: http://refeds.org/category/research-and-scholarship
+      name: REFEDS Research & Scholarship
+      meaning: >-
+        UF's IdP commits to releasing a minimal, standard attribute bundle to R&S service
+        providers without a per-service agreement. This is an interoperability commitment,
+        machine-readable, and rare enough in this cohort to be worth naming.
+    - id: https://refeds.org/sirtfi
+      name: REFEDS Sirtfi (Security Incident Response Trust Framework)
+      meaning: >-
+        UF asserts an operational security-incident-response capability and publishes a
+        contactable security team in the metadata.
+    - id: http://id.incommon.org/category/registered-by-incommon
+      name: Registered by InCommon
+  contacts:
+    - type: technical
+      name: Identity Services Team
+      email: Identity-Services@it.ufl.edu
+    - type: support
+      name: UF Computing Help Desk
+      email: helpdesk@ufl.edu
+    - type: administrative
+      name: Identity Services Team
+      email: Identity-Services@it.ufl.edu
+    - type: 'other:incident-response (Sirtfi)'
+      name: UF Incident Response team
+      email: ufirt@ufl.edu
+
+service_providers:
+  note: >-
+    Not enumerated. The per-entity MDQ interface answers only for an entityID supplied in
+    full, and InCommon does not publish a searchable index of a member's service
+    providers, so any UF SP list built here would be guesswork. Recorded as unknown rather
+    than invented. The full InCommon aggregate would settle it if fetched.
+  status: not-enumerated

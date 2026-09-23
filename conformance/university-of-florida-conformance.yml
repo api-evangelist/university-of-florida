@@ -1,0 +1,194 @@
+specification: API Evangelist Domain Standard Conformance
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+regime: education
+generated: '2026-09-01'
+method: probed
+source: >-
+  Live probes on 2026-09-01 of: the InCommon per-entity metadata for
+  https://login.ufl.edu/idp/shibboleth (HTTP 200, signed SAML 2.0 EntityDescriptor); the
+  OAI-PMH interface at https://api.patron.uflib.ufl.edu/oai (verbs Identify and
+  ListMetadataFormats, HTTP 200, conformant OAI-PMH 2.0 XML); the Crossref member record
+  https://api.crossref.org/members/17357 (HTTP 200); the ROR record
+  https://api.ror.org/v2/organizations/02y3ad647 (HTTP 200); and negative probes of the
+  DataCite provider and client APIs. Operator was settled for every host by ARIN whois on
+  the resolved address and by TLS issuer, not by hostname.
+description: >-
+  Conformance against the Kin Score `education` regulatory regime standards list
+  (scim, lti, oneroster, ed-fi, caliper, qti, oai-pmh, shibboleth, saml, orcid, datacite,
+  crossref). Reward-only: a standard is recorded as conformant only where an
+  INSTITUTION-OPERATED contract demonstrates it, with the exact location of the evidence
+  named. Nothing here is inferred from a prose claim on a UF web page.
+
+  Four hit. Three of them — oai-pmh, shibboleth, saml — rest on the same finding: UF runs
+  its own infrastructure on its own ARIN allocation (128.227.0.0/16, NetName UFNET) under
+  InCommon-issued certificates, so the contracts genuinely are UF's engineering. The
+  fourth, crossref, is a registry membership rather than an operated surface and is
+  recorded as such.
+
+  The learning-platform standards — lti, oneroster, caliper, qti, ed-fi, scim — return
+  NOTHING publicly. UF runs Canvas (Instructure) for its LMS, and Canvas is LTI-certified,
+  but that conformance is Instructure's engineering and is not asserted here. This is the
+  distinction the university pipeline exists to hold.
+
+conforms:
+- standard: oai-pmh
+  name: OAI-PMH 2.0 (Open Archives Initiative Protocol for Metadata Harvesting)
+  status: conformant
+  x-operator: institution
+  confidence: high
+  evidence:
+    url: https://api.patron.uflib.ufl.edu/oai?verb=Identify
+    status: 200
+    content_type: text/xml
+    locations:
+    - 'OAI-PMH/Identify/protocolVersion = 2.0'
+    - 'OAI-PMH/Identify/repositoryName = University of Florida Digital Collections'
+    - 'OAI-PMH/Identify/baseURL = https://ufdc.ufl.edu/'
+    - 'OAI-PMH/Identify/adminEmail = digby@ufl.edu'
+    - 'OAI-PMH/Identify/earliestDatestamp = 2007-08-07'
+    - 'OAI-PMH/Identify/deletedRecord = transient'
+    - 'OAI-PMH/Identify/granularity = YYYY-MM-DD'
+    - 'OAI-PMH/Identify/description/oai-identifier/repositoryIdentifier = UFDC'
+    corroboration:
+      second_verb: https://api.patron.uflib.ufl.edu/oai?verb=ListMetadataFormats
+      metadata_formats:
+      - prefix: oai_dc
+        schema: http://www.openarchives.org/OAI/2.0/oai_dc.xsd
+      - prefix: mods
+        schema: http://www.loc.gov/standards/mods/v3/mods-3-7.xsd
+      resolved_ip: 128.227.18.113
+      ip_owner: UFNET / University of Florida (ARIN, 128.227.0.0/16)
+      tls_issuer: 'C=US, O=Internet2, CN=InCommon RSA Server CA 2'
+  note: >-
+    Two metadata formats, including MODS 3.7 — richer than the oai_dc floor most
+    repositories stop at. This is a genuine, self-hosted, standards-conformant harvesting
+    surface, not a vendor repository under a UF hostname.
+  availability_caveat: >-
+    The conformance is real but its availability is not uniform. api.patron.uflib.ufl.edu
+    resolves to two A records and they do not serve the same routes: 128.227.18.113 serves
+    /oai and /oai_by_title, 128.227.24.223 returns 404 for both while serving all seven
+    other sampled resources normally. Verified 2026-09-01 by pinning each address with
+    curl --resolve. A harvester landing on the second node reads the repository as
+    withdrawn. Recorded against the conformance rather than deducted from it — the
+    contract conforms; the deployment is inconsistent.
+  correction: >-
+    The path this catalog previously implied — the legacy SobekCM endpoint
+    https://ufdc.ufl.edu/sobekcm_oai.aspx — is DEAD. It returns HTTP 200 carrying the UFDC
+    React single-page-app shell, a textbook soft-404. A status-code-only probe would have
+    scored it live. The conformance survives only because the working endpoint was found
+    on a different host.
+
+- standard: shibboleth
+  name: Shibboleth Identity Provider
+  status: conformant
+  x-operator: institution
+  confidence: high
+  evidence:
+    url: https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
+    status: 200
+    entity: https://login.ufl.edu/idp/shibboleth
+    locations:
+    - 'EntityDescriptor[@entityID="https://login.ufl.edu/idp/shibboleth"]/IDPSSODescriptor/@protocolSupportEnumeration contains urn:mace:shibboleth:1.0'
+    - 'IDPSSODescriptor/SingleSignOnService[@Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest"]/@Location = https://login.ufl.edu/idp/profile/Shibboleth/SSO'
+    - 'IDPSSODescriptor/Extensions/shibmd:Scope = ufl.edu'
+    - 'EntityDescriptor/Organization/OrganizationName = University of Florida'
+    corroboration:
+      resolved_ip: 128.227.9.67
+      cname: none
+      ip_owner: UFNET / University of Florida (ARIN, 128.227.0.0/16)
+      tls_issuer: 'C=US, O=Internet2, CN=InCommon RSA Server CA 2'
+      note: >-
+        No CNAME to any managed-IdP platform, unlike idp.monash.edu.au and
+        idp.unimelb.edu.au which CNAME into AAF's Rapid IdP on Amazon address space. UF's
+        IdP is on UF's own allocation, so the Shibboleth deployment is UF's engineering.
+  note: >-
+    The entityID also dereferences directly — https://login.ufl.edu/idp/shibboleth returns
+    HTTP 200 — so UF self-publishes its own entity metadata as well as being carried in
+    the federation aggregate.
+
+- standard: saml
+  name: SAML 2.0
+  status: conformant
+  x-operator: institution
+  confidence: high
+  evidence:
+    url: https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
+    status: 200
+    entity: https://login.ufl.edu/idp/shibboleth
+    locations:
+    - 'IDPSSODescriptor/@protocolSupportEnumeration contains urn:oasis:names:tc:SAML:2.0:protocol'
+    - 'IDPSSODescriptor/SingleSignOnService[@Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"]'
+    - 'IDPSSODescriptor/SingleSignOnService[@Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"]'
+    - 'IDPSSODescriptor/ArtifactResolutionService[@Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"]'
+    - 'AttributeAuthorityDescriptor/AttributeService[@Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"]'
+    - 'Extensions/mdattr:EntityAttributes containing http://refeds.org/category/research-and-scholarship and https://refeds.org/sirtfi'
+  note: >-
+    SAML 1.1 is also supported alongside 2.0. The REFEDS Research & Scholarship entity
+    category is a published, machine-readable attribute-release commitment; REFEDS Sirtfi
+    is a published security-incident-response commitment with a contactable team
+    (ufirt@ufl.edu). Both are interoperability contracts, not marketing.
+
+- standard: crossref
+  name: Crossref
+  status: registered
+  x-operator: registry
+  confidence: high
+  evidence:
+    url: https://api.crossref.org/members/17357
+    status: 200
+    locations:
+    - 'message.id = 17357'
+    - 'message.primary-name = University of Florida George A Smathers Libraries'
+    - 'message.prefixes = ["10.32473"]'
+    - 'message.counts.total-dois = 14724'
+  note: >-
+    A registry MEMBERSHIP, not an operated contract. UF Libraries is a Crossref member
+    depositing under DOI prefix 10.32473, 14,724 DOIs as of 2026-09-01. Recorded because
+    it is a machine-evidenced fact about the institution; the Crossref API itself is
+    Crossref's and is not saved here.
+
+not_conformant:
+- standard: datacite
+  status: not-found
+  probes:
+  - url: https://api.datacite.org/providers?query=%22University%20of%20Florida%22
+    status: 200
+    result: 'no University of Florida provider; only unrelated Florida institutions'
+  - url: https://api.datacite.org/clients?query=ufl
+    status: 200
+    result: 'zero results'
+  - url: https://api.datacite.org/clients?query=%22University+of+Florida%22
+    status: 200
+    result: 'meta.total = 0'
+  note: >-
+    UF does not appear as a DataCite member or repository client. Its research-data DOIs
+    are minted through Crossref instead. Recorded as an evidenced absence, not a gap in
+    our probing.
+- standard: orcid
+  status: not-found
+  note: >-
+    No institution-operated ORCID integration is publicly discoverable. UF has no ORCID
+    member API surface published on a ufl.edu host, and nothing in the probed contracts
+    references ORCID identifiers.
+- standard: lti
+  status: vendor-only
+  note: >-
+    UF runs Canvas (Instructure) as its learning management system. Canvas is IMS Global
+    LTI-certified, but that conformance is Instructure's engineering. Not credited to UF.
+- standard: oneroster
+  status: not-found
+- standard: caliper
+  status: not-found
+- standard: qti
+  status: not-found
+- standard: ed-fi
+  status: not-found
+  note: 'Ed-Fi targets K-12 state education agencies; not applicable to a research university.'
+- standard: scim
+  status: not-found
+  note: >-
+    UF operates enterprise identity management (GatorLink) but publishes no public SCIM
+    contract. Any SCIM provisioning it runs is behind UFIT authentication and cannot be
+    evidenced from outside.

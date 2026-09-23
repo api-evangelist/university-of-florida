@@ -1,44 +1,134 @@
 ---
 name: University of Florida
-description: University of Florida public developer/API footprint review for APIs.json cataloging.
+description: >-
+  University of Florida public API footprint review for APIs.json cataloging, re-run under
+  the API Evangelist university pipeline with operator attribution settled before any
+  contract was saved.
 url: https://raw.githubusercontent.com/api-evangelist/university-of-florida/refs/heads/main/review.yml
 created: '2026-06-03'
-modified: '2026-06-03'
+modified: '2026-09-01'
 reviews:
-  - date: '2026-06-03'
-    rating: 2
+  - date: '2026-09-01'
+    rating: 3
     summary: >-
-      UF has no centralized public developer portal. Verified live: the Schedule
-      of Courses (SOC) JSON API returns real course data (HTTP 200 with a term
-      parameter); the SOC filters endpoint resolves (200); the official
-      UniversityofFlorida GitHub org exists with 3 public repos; ufl.edu, it.ufl.edu,
-      ufdc.ufl.edu and info.apps.ufl.edu all return 200. Campus map JSON host
-      responds but blocks automated clients (403). UFDC OAI-PMH/RSS feeds are
-      documented by UF Library Technology Services; the legacy SobekCM OAI path
-      now redirects to a React app and an OpenAPI API is noted as forthcoming.
-      No endpoints fabricated; gated identity/SIS APIs excluded.
+      Re-profiled under the university pipeline. UF operates TWO genuine public APIs on its
+      own infrastructure — the ONE.UF Schedule of Courses API and the Smathers Libraries
+      Patron API — plus a self-hosted Shibboleth IdP registered in InCommon. Operator was
+      settled by ARIN whois on the resolved address and by TLS issuer, not by hostname:
+      one.ufl.edu, api.patron.uflib.ufl.edu and login.ufl.edu all resolve into
+      128.227.0.0/16 (NetName UFNET, OrgName University of Florida) with no CNAME, under
+      Internet2/InCommon certificates UF procures. OpenAPI contracts were derived by
+      probing; every parameter was individually verified and the twelve that did not
+      demonstrably filter were recorded as unverified rather than asserted.
+
+      THREE CORRECTIONS against the 2026-06-03 profile. (1) The UFDC OAI-PMH path this
+      catalog implied, https://ufdc.ufl.edu/sobekcm_oai.aspx, is a SOFT-404 — HTTP 200
+      carrying the React SPA shell. The live OAI-PMH 2.0 repository is on a different host,
+      https://api.patron.uflib.ufl.edu/oai, discovered by reading the UFDC client's
+      build-time environment module. (2) https://one.ufl.edu/llms.txt returns 200 and is
+      also the SPA shell, not an llms.txt — not credited. (3) The cohort DNS pass reported
+      no CNAME tenancy for this repo; two were found by hand, catalog.ufl.edu ->
+      ufl-public.courseleaf.com and calendar.ufl.edu -> ufl-prod.lwcal.com, both recorded
+      as tenant relationships.
+
+      Evidenced absences: no DataCite membership (probed, zero results), no open data
+      portal (data.ufl.edu redirects to GatorLink SSO), no developer portal, no
+      documentation, no versioning, no changelog, no status page, no rate-limit signal, no
+      terms of use, no security.txt. Campus map JSON is live but WAF-blocked to every
+      non-browser client. No endpoints fabricated; no vendor contract saved under UF.
     endpoints:
-      - url: https://one.ufl.edu/apix/soc/schedule/?category=RES&term=2251&last-control-number=0
+      - url: https://one.ufl.edu/apix/soc/schedule/?term=2268&last-control-number=0
         status: 200
-        note: SOC API returns course listing JSON with parameters
+        note: SOC API returns 4,624 Fall 2026 course rows, unauthenticated
+      - url: https://one.ufl.edu/apix/soc/schedule/
+        status: 400
+        note: 'Structured JSON error envelope: {"error":{"title","description","message"}}'
+      - url: https://one.ufl.edu/apix/soc/schedule/?term=BOGUS&last-control-number=0
+        status: 200
+        note: SILENT FAILURE — an unrecognised term returns an empty result set, not an error
       - url: https://one.ufl.edu/apix/soc/filters/
         status: 200
-        note: SOC filter options endpoint resolves
+        note: 3 categories, 8 program levels, 49 terms, 203 departments
+      - url: https://api.patron.uflib.ufl.edu
+        status: 200
+        note: Machine-readable root index of 17 resources; the API documents itself
+      - url: https://api.patron.uflib.ufl.edu/oai?verb=Identify
+        status: 200
+        note: Conformant OAI-PMH 2.0, repositoryIdentifier UFDC, adminEmail digby@ufl.edu
+      - url: https://api.patron.uflib.ufl.edu/oai?verb=ListMetadataFormats
+        status: 200
+        note: oai_dc and MODS 3.7
+      - url: https://api.patron.uflib.ufl.edu/exactsearch?default=%22elmer+h.+bone%22
+        status: 200
+        note: Faceted search returns real hits with filter buckets
+      - url: https://api.patron.uflib.ufl.edu/oai?verb=Identify
+        status: 404
+        note: >-
+          NODE DIVERGENCE, pinned to 128.227.24.223 with curl --resolve. The second A
+          record behind this hostname does not serve /oai or /oai_by_title; 128.227.18.113
+          serves both. Seven other sampled routes are identical on both nodes. Intermittent
+          OAI-PMH failure depending on DNS ordering.
+      - url: https://api.patron.uflib.ufl.edu/openapi.json
+        status: 404
+        note: No OpenAPI published; UF LTS describes one as forthcoming
+      - url: https://mdq.incommon.org/entities/https%3A%2F%2Flogin.ufl.edu%2Fidp%2Fshibboleth
+        status: 200
+        note: Signed SAML 2.0 EntityDescriptor, 9,022 bytes, REFEDS R&S + Sirtfi
+      - url: https://login.ufl.edu/idp/shibboleth
+        status: 200
+        note: UF self-publishes its own IdP entity metadata; no CNAME, UFNET address space
+      - url: https://api.crossref.org/members/17357
+        status: 200
+        note: UF George A Smathers Libraries, prefix 10.32473, 14,724 DOIs
+      - url: https://api.ror.org/v2/organizations/02y3ad647
+        status: 200
+        note: ROR registration for University of Florida
+      - url: https://api.datacite.org/clients?query=%22University+of+Florida%22
+        status: 200
+        note: meta.total = 0 — UF is NOT a DataCite member or client
+      - url: https://ufdc.ufl.edu/sobekcm_oai.aspx?verb=Identify
+        status: 200
+        note: SOFT-404 — returns the React SPA shell, not OAI-PMH XML. Dead surface.
+      - url: https://one.ufl.edu/llms.txt
+        status: 200
+        note: SOFT-404 — returns the ONE.UF SPA shell, not an llms.txt. Not credited.
       - url: https://campusmap.ufl.edu/library/cmapjson/geo_buildings.json
         status: 403
-        note: Campus map JSON host blocks non-browser user agents
-      - url: https://ufdc.ufl.edu/
+        note: WAF blocks non-browser clients even with a desktop Chrome UA and a Referer
+      - url: https://data.ufl.edu/
         status: 200
-        note: UF Digital Collections live (React app; OAI-PMH/RSS documented)
-      - url: https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/
+        note: Redirects to login.ufl.edu SAML2 SSO — auth-gated, not an open data portal
+      - url: https://ufl.instructure.com/api/v1/accounts/self
+        status: 401
+        note: Canvas tenant; Instructure's contract, not saved under UF
+      - url: https://catalog.ufl.edu/ribbit/?page=getcourse.rjs&code=CIS%204301
         status: 200
-        note: UFDC API/metadata feed documentation (OAI-PMH, RSS, Swagger forthcoming)
+        note: CourseLeaf tenancy — catalog.ufl.edu CNAMEs to ufl-public.courseleaf.com
+      - url: https://calendar.ufl.edu/live/ical/events
+        status: 200
+        note: LiveWhale tenancy — calendar.ufl.edu CNAMEs to ufl-prod.lwcal.com
+      - url: https://www.ufl.edu/.well-known/security.txt
+        status: 404
+        note: No security.txt published
       - url: https://github.com/UniversityofFlorida
         status: 200
-        note: Official GitHub org, 3 public repos
-      - url: https://www.ufl.edu/
-        status: 200
-        note: Official institution website
+        note: Official GitHub org — 3 repositories, none updated since 2018
       - url: https://www.linkedin.com/school/university-of-florida/
         status: 999
         note: Valid school page; LinkedIn returns 999 to automated clients
+  - date: '2026-06-03'
+    rating: 2
+    summary: >-
+      Original profile. UF has no centralized public developer portal. Verified live: the
+      Schedule of Courses (SOC) JSON API returns real course data; the SOC filters endpoint
+      resolves; the official UniversityofFlorida GitHub org exists with 3 public repos;
+      ufl.edu, it.ufl.edu, ufdc.ufl.edu and info.apps.ufl.edu all return 200. Campus map
+      JSON host responds but blocks automated clients (403). UFDC OAI-PMH/RSS feeds were
+      recorded from UF Library Technology Services documentation.
+    superseded_by: '2026-09-01'
+    superseded_because: >-
+      The UFDC OAI-PMH claim rested on documentation rather than a probed Identify
+      response, and the documented path is a soft-404. The 2026-09-01 review replaces it
+      with the OAI-PMH endpoint that actually answers, and adds the Libraries Patron API
+      and the InCommon-registered identity provider, neither of which the original profile
+      found.

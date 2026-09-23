@@ -4,29 +4,55 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: University of Florida
 providerId: university-of-florida
 created: '2026-06-03'
-modified: '2026-06-03'
-reconciled: false
+modified: '2026-09-01'
+reconciled: true
+generated: '2026-09-01'
+method: probed
+x-operator: institution
+source: >-
+  Every response header returned by https://one.ufl.edu/apix/soc/schedule/,
+  https://one.ufl.edu/apix/soc/filters/ and every resource under
+  https://api.patron.uflib.ufl.edu, inspected on 2026-09-01.
 tags:
 - Education
 - Higher Education
 - University
 - Rate Limiting
 description: >-
-  University of Florida does not publish a unified public rate-limit table across its APIs. Open
-  metadata and harvesting endpoints (OAI-PMH, IIIF, library) may throttle large-scale
-  or automated harvesting; clients should harvest politely, honor Retry-After, and
-  contact the relevant service for bulk access.
-notes: Confirm per-service limits with each API's documentation; harvest responsibly.
+  The University of Florida publishes NO rate limit for either API it operates, and
+  emits no rate-limit signal of any kind. Verified 2026-09-01 across both hosts: no
+  X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, RateLimit or Retry-After
+  header on any response, and no HTTP 429 observed under normal use. Neither API
+  authenticates callers, so UF has no mechanism to identify, meter, throttle or revoke a
+  consumer. The only protection against being cut off is the consumer's own restraint.
+  Treat both APIs as a courtesy, not an entitlement, and self-throttle.
+notes: >-
+  No per-service documentation exists to confirm limits against — UF publishes none. The
+  earlier version of this artifact named IIIF among UF's harvesting surfaces; no IIIF
+  endpoint was found on any UF host in the 2026-09-01 probe and that claim is withdrawn.
 sources:
 - https://raw.githubusercontent.com/api-evangelist/university-of-florida/refs/heads/main/apis.yml
 responseCodes:
-  throttled: 429
+  throttled: none-observed
+  note: >-
+    No 429 was observed and none is documented. The previous value of 429 here was a
+    scaffold default, not a probe result, and is corrected.
 limits:
-- name: Default
+- name: UF Schedule of Courses (SOC) API
+  baseURL: https://one.ufl.edu/apix/soc
   scope: client
-  metric: requests-per-minute
-  limit: see service documentation
-  notes: No published global limit; large harvests may be rate-limited.
+  metric: unpublished
+  limit: none-published
+  notes: 'No rate-limit header of any kind on any response. Unauthenticated, so unmeterable.'
+- name: UF Libraries Patron API
+  baseURL: https://api.patron.uflib.ufl.edu
+  scope: client
+  metric: unpublished
+  limit: none-published
+  notes: >-
+    No rate-limit header of any kind. The OAI-PMH interface at /oai supports
+    resumptionToken paging, which is the only flow-control mechanism either API exposes,
+    and it is the standard's, not UF's.
 policies:
 - name: Backoff Strategy
   description: Exponential backoff with jitter; honor Retry-After; harvest during off-peak hours.

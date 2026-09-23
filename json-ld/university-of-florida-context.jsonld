@@ -9,12 +9,10 @@
     "CollegeOrUniversity": "schema:CollegeOrUniversity",
     "address": "schema:address",
     "sameAs": "schema:sameAs",
-
     "api": "uf:api",
     "apiName": "schema:name",
     "humanURL": "schema:url",
     "baseURL": "uf:baseURL",
-
     "course": "uf:course",
     "code": "schema:courseCode",
     "courseId": "schema:identifier",
@@ -25,7 +23,6 @@
     "meetTimes": "uf:meetTimes",
     "openSeats": "uf:openSeats",
     "deptName": "schema:department",
-
     "collection": "uf:collection",
     "bibid": "uf:bibid",
     "publisher": "schema:publisher",
@@ -64,5 +61,11 @@
       "humanURL": "https://lts.uflib.ufl.edu/supported-systems/uf-digital-collections/",
       "baseURL": "https://api.patron.uflib.ufl.edu/"
     }
-  ]
+  ],
+  "x-provenance": {
+    "generated": "2026-09-01",
+    "method": "derived",
+    "x-operator": "institution",
+    "source": "Derived from apis.yml and from the probed OpenAPI contracts in openapi/, both of which were themselves derived from live HTTP probes of one.ufl.edu and api.patron.uflib.ufl.edu on 2026-09-01. Not published by the University of Florida."
+  }
 }

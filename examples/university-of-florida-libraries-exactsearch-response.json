@@ -1,0 +1,148 @@
+{
+  "specification": "API Evangelist Examples",
+  "specificationVersion": "0.1",
+  "provider": "University of Florida",
+  "providerId": "university-of-florida",
+  "generated": "2026-09-01",
+  "method": "probed",
+  "source": "https://api.patron.uflib.ufl.edu/exactsearch?default=%22elmer+h.+bone%22 (HTTP 200, 2026-09-01)",
+  "x-operator": "institution",
+  "description": "Verbatim live response from the UF Libraries Patron API exactsearch resource, truncated to the first hit. The API's `ip` field, which echoes the CALLER's own address back, has been REMOVED \u2014 it is our address, not UF data, and does not belong in a catalogued artifact.",
+  "request": {
+    "method": "GET",
+    "url": "https://api.patron.uflib.ufl.edu/exactsearch?default=%22elmer+h.+bone%22",
+    "authentication": "none"
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json",
+    "truncated": true,
+    "redactions": [
+      "ip \u2014 caller IP echoed by the API, removed"
+    ],
+    "body": {
+      "query": {
+        "default": [
+          "\"elmer h. bone\""
+        ]
+      },
+      "hit_count": 6,
+      "filter_buckets": {
+        "mediatype": {
+          "Photograph": 4,
+          "Newspaper": 2
+        },
+        "subjects": {
+          "Newspapers | Bradford County (Fla.)": 2,
+          "Newspapers | Starke (Fla.)": 2,
+          "University of Florida": 2,
+          "Barber, Walter L.": 1,
+          "Bone, Elmer": 1,
+          "Bone, Elmer H.": 1,
+          "Business and commerce": 1,
+          "Downtown": 1,
+          "Florida Field": 1,
+          "Football Game": 1,
+          "Gainesville": 1,
+          "Georgia vs Florida": 1,
+          "Holland, Spessard": 1,
+          "Orange Grove String Band": 1,
+          "Radio": 1,
+          "Stadium": 1,
+          "WRUF": 1,
+          "Wing": 1,
+          "people": 1
+        },
+        "genre": {
+          "newspaper": 2
+        },
+        "creator": {
+          "Bone, Elmer": 1,
+          "Bone, Elmer H.": 1,
+          "Bone, Elmer Harvey, 1885-1976": 1
+        },
+        "language": {
+          "English": 6
+        },
+        "publisher": {
+          "E.L. Matthews": 2
+        },
+        "collections": {
+          "Elmer Harvey Bone Photographic Collection": 4,
+          "UF Special Collections": 3,
+          "University Archives: Photograph Collection": 3,
+          "Florida Digital Newspaper Library": 2,
+          "Florida Newspapers": 2,
+          "Search all Groups": 2,
+          "University Archives": 2,
+          "Florida Photographs": 1,
+          "Red Barber Papers": 1
+        },
+        "spatial coverage": {
+          "Florida": 3,
+          "United States": 3,
+          "Bradford": 2,
+          "Starke": 2,
+          "Alachua": 1,
+          "Gainesville": 1,
+          "North America": 1
+        },
+        "group_title": {
+          "Bradford County Telegraph.": 2,
+          "Car with advertisements and \"Evening News\" painted on it.  Elmer H. Bone Photo collection": 1,
+          "Red Barber announcing Orange Grove String Band for WRUF. Elmer H. Bone Photo collection": 1,
+          "Spessard Holland and Wing": 1,
+          "View of stands and Florida Field at the University of Florida": 1
+        },
+        "etd_degree_discipline": {},
+        "etd_degree_level": {}
+      },
+      "hits": [
+        {
+          "did": "UF00046984:00001",
+          "bibid": "UF00046984",
+          "vid": "00001",
+          "title": "Spessard Holland and Wing",
+          "mediatype": "Photograph",
+          "aggregationcodes": [
+            "bone",
+            "uapc"
+          ],
+          "mainthumbnail": "UF00046984thm.jpg",
+          "mainjpeg": "UF00046984.jpg",
+          "pagecount": 1,
+          "language": [
+            "English"
+          ],
+          "creator": [],
+          "subject_keyword": [
+            "Holland, Spessard",
+            "Wing",
+            "people"
+          ],
+          "genre": [],
+          "source_institution": "University of Florida",
+          "holding_location": "University of Florida Archives, Special Collections, George A. Smathers Libraries",
+          "publication_date": "1952",
+          "conv_date": "1952-01-01",
+          "collections": [
+            "Elmer Harvey Bone Photographic Collection",
+            "University Archives: Photograph Collection"
+          ],
+          "general_note": [
+            "Holland and Wing. Elmer H.  Bone Photo Collection.",
+            "Digitized with funding from the <a href=\"http://www.imls.gov\">Institute of Museum and Library Services</a> as part of the Ephemeral Cities grant project."
+          ],
+          "group_title": "Spessard Holland and Wing",
+          "ip_restriction_mask": 0,
+          "made_public_date": "2006-01-26T20:42:34.423000",
+          "hit_reason": {
+            "general_note": [
+              "<mark>Elmer</mark> <mark>H</mark>.  <mark>Bone</mark> Photo Collection."
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

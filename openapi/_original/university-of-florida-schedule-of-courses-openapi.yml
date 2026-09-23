@@ -1,0 +1,386 @@
+openapi: 3.1.0
+info:
+  title: University of Florida Schedule of Courses (SOC) API
+  version: '2026-09-01'
+  summary: Public, unauthenticated JSON search over the University of Florida Schedule of Courses.
+  description: |
+    The Schedule of Courses (SOC) API is the JSON backend of ONE.UF, the University of
+    Florida's student self-service portal. It is operated by the University of Florida
+    itself: `one.ufl.edu` resolves to 128.227.9.53 inside UFNET (128.227.0.0/16, ARIN
+    OrgName "University of Florida") and is served under an InCommon RSA OV SSL
+    certificate that UF procures. It is not a vendor platform running under a UF
+    hostname.
+
+    UF publishes no developer portal, no reference documentation and no terms of use for
+    this API. It is undocumented but unauthenticated and openly reachable, and has been
+    community-documented for years (github.com/Rolstenhouse/uf_api). This contract was
+    DERIVED by probing the live endpoints on 2026-09-01 and by reading the parameter names
+    out of the ONE.UF client bundle at
+    https://one.ufl.edu/soc/soc.4cf36e484f567e1c2e2c.min.js — not supplied by UF.
+
+    Every parameter documented here was individually verified against term 2268 (Fall
+    2026) and only retained where it demonstrably changed the result set. Parameters named
+    in the client bundle but NOT observed to filter are listed under
+    `x-unverified-parameters` rather than asserted as working.
+  contact:
+    name: UF Computing Help Desk
+    url: https://helpdesk.ufl.edu/
+  x-operator: institution
+  x-operator-basis: >-
+    one.ufl.edu -> 128.227.9.53, ARIN NetName UFNET, OrgName "University of Florida",
+    CIDR 128.227.0.0/16. No CNAME to any vendor platform. TLS issuer
+    "C=US, O=InCommon, LLC, CN=InCommon RSA OV SSL CA 3" — a UF-procured certificate.
+    The API path, the response envelope and the error envelope are all UF's own; nothing
+    in servers[], info.title or the payloads names a third-party product.
+  x-provenance:
+    generated: '2026-09-01'
+    method: derived
+    source: >-
+      Live HTTP probes of https://one.ufl.edu/apix/soc/schedule/ and
+      https://one.ufl.edu/apix/soc/filters/ on 2026-09-01, plus parameter names read from
+      the ONE.UF SOC client bundle. Schemas reflect observed response payloads only.
+servers:
+  - url: https://one.ufl.edu/apix/soc
+    description: Production. Public and unauthenticated; no API key is issued or required.
+tags:
+  - name: Schedule
+    description: Course and section search across a UF academic term.
+  - name: Filters
+    description: Controlled vocabularies backing the SOC search form.
+paths:
+  /schedule:
+    get:
+      tags: [Schedule]
+      operationId: searchSchedule
+      summary: Search the Schedule of Courses for one term
+      description: |
+        Returns courses and their sections for a single academic term. The response is a
+        single-element ARRAY whose one object carries the page of courses plus the paging
+        counters — an unusual envelope, and a real one.
+
+        Paging is cursor-style, not offset-style: pass `last-control-number=0` on the
+        first call, then pass the `LASTCONTROLNUMBER` value from the previous response to
+        fetch the next page. Roughly 50 courses are returned per call regardless of how
+        many sections they carry.
+
+        An unknown term string does NOT error: it returns an empty result set with
+        `TOTALROWS: 0`. Omitting `term` entirely returns HTTP 400 with the error envelope.
+      parameters:
+        - name: term
+          in: query
+          required: true
+          description: >-
+            Term code from GET /filters `terms[].CODE`, e.g. `2268` (Fall 2026), `2261`
+            (Spring 2026), `22651` (Summer C 2026). Omitting it returns 400 "Invalid term";
+            an unrecognised value returns an empty result set.
+          schema: { type: string, examples: ['2268'] }
+        - name: last-control-number
+          in: query
+          required: false
+          description: >-
+            Paging cursor. Send `0` for the first page, then the `LASTCONTROLNUMBER` from
+            the previous response.
+          schema: { type: integer, default: 0, examples: [0] }
+        - name: category
+          in: query
+          description: Program category from GET /filters `categories[].CODE`.
+          schema: { type: string, enum: [CWSP, UFOL, IA, RES] }
+        - name: prog-level
+          in: query
+          description: Academic program level from GET /filters `progLevels[].CODE`.
+          schema: { type: string, enum: [UGRD, GRAD, LAW, MED, PHM, PA, PROF, VEM] }
+        - name: dept
+          in: query
+          description: Department code from GET /filters `departments[].CODE`, e.g. `17030000`.
+          schema: { type: string }
+        - name: course-code
+          in: query
+          description: Course code prefix or full code, e.g. `CIS` or `CIS4301`.
+          schema: { type: string }
+        - name: course-title
+          in: query
+          description: Free-text match against the course title.
+          schema: { type: string }
+        - name: class-num
+          in: query
+          description: Exact five-digit section class number, e.g. `10101`.
+          schema: { type: string }
+        - name: instructor
+          in: query
+          description: Free-text match against instructor name.
+          schema: { type: string }
+        - name: level-min
+          in: query
+          description: Lowest course number to include, e.g. `1000`.
+          schema: { type: integer }
+        - name: level-max
+          in: query
+          description: Highest course number to include, e.g. `4999`.
+          schema: { type: integer }
+        - name: ai
+          in: query
+          description: >-
+            Restrict to courses carrying UF's Artificial Intelligence curriculum
+            designation. Verified: 138 of 4,624 Fall 2026 courses.
+          schema: { type: boolean }
+        - name: day-m
+          in: query
+          description: Meets Monday.
+          schema: { type: boolean }
+        - name: day-t
+          in: query
+          description: Meets Tuesday.
+          schema: { type: boolean }
+        - name: day-w
+          in: query
+          description: Meets Wednesday.
+          schema: { type: boolean }
+        - name: day-r
+          in: query
+          description: Meets Thursday.
+          schema: { type: boolean }
+        - name: day-f
+          in: query
+          description: Meets Friday.
+          schema: { type: boolean }
+        - name: day-s
+          in: query
+          description: Meets Saturday.
+          schema: { type: boolean }
+        - name: ge-b
+          in: query
+          description: General Education — Biological Sciences.
+          schema: { type: boolean }
+        - name: ge-c
+          in: query
+          description: General Education — Composition.
+          schema: { type: boolean }
+        - name: ge-d
+          in: query
+          description: General Education — Diversity.
+          schema: { type: boolean }
+        - name: ge-h
+          in: query
+          description: General Education — Humanities.
+          schema: { type: boolean }
+        - name: ge-m
+          in: query
+          description: General Education — Mathematics.
+          schema: { type: boolean }
+        - name: ge-n
+          in: query
+          description: General Education — International.
+          schema: { type: boolean }
+        - name: ge-p
+          in: query
+          description: General Education — Physical Sciences.
+          schema: { type: boolean }
+        - name: ge-s
+          in: query
+          description: General Education — Social and Behavioral Sciences.
+          schema: { type: boolean }
+        - name: online-a
+          in: query
+          description: Section web/online delivery flag A.
+          schema: { type: boolean }
+        - name: online-c
+          in: query
+          description: Section web/online delivery flag C.
+          schema: { type: boolean }
+        - name: online-h
+          in: query
+          description: Section web/online delivery flag H (hybrid).
+          schema: { type: boolean }
+        - name: online-p
+          in: query
+          description: Section web/online delivery flag P (primarily classroom).
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: A page of courses for the requested term.
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                maxItems: 1
+                items: { $ref: '#/components/schemas/SchedulePage' }
+              examples:
+                fall2026FirstPage:
+                  summary: First page, Fall 2026, unfiltered
+                  externalValue: >-
+                    https://one.ufl.edu/apix/soc/schedule/?term=2268&last-control-number=0
+        '400':
+          description: >-
+            Missing or malformed `term`. Returns the SOC error envelope; observed body
+            `{"error":{"title":"Resource not found","description":"Invalid term",...}}`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+      x-unverified-parameters:
+        note: >-
+          Named in the ONE.UF client bundle but NOT observed to change the result set for
+          term 2268 under any value tried (true / Y / 1 / numeric). Recorded rather than
+          asserted, so this contract does not claim behaviour it could not reproduce.
+        parameters: [credits, cred-srch, var-cred, quest, qst-1, qst-2, qst-3, qst-4, writing, wr-2000, wr-4000, wr-6000]
+  /filters:
+    get:
+      tags: [Filters]
+      operationId: getFilters
+      summary: Controlled vocabularies for the schedule search
+      description: >-
+        Returns every valid value for the `term`, `category`, `prog-level` and `dept`
+        parameters of GET /schedule. Takes no parameters; any supplied are ignored.
+      responses:
+        '200':
+          description: The four controlled vocabularies.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Filters' }
+              examples:
+                live:
+                  externalValue: https://one.ufl.edu/apix/soc/filters/
+components:
+  schemas:
+    SchedulePage:
+      type: object
+      description: One page of course results plus the cursor-paging counters.
+      required: [COURSES, LASTCONTROLNUMBER, RETRIEVEDROWS, TOTALROWS]
+      properties:
+        COURSES:
+          type: array
+          items: { $ref: '#/components/schemas/Course' }
+        LASTCONTROLNUMBER:
+          type: integer
+          description: Cursor to pass as `last-control-number` on the next call.
+        RETRIEVEDROWS:
+          type: integer
+          description: Rows returned by this call (observed ~50).
+        TOTALROWS:
+          type: integer
+          description: Total rows matching the query across all pages.
+    Course:
+      type: object
+      required: [code, courseId, name, sections]
+      properties:
+        code: { type: string, description: 'Course code without space, e.g. ABE3000C.' }
+        courseId: { type: string, description: 'Zero-padded internal course identifier.' }
+        name: { type: string }
+        openSeats: { type: ['integer', 'null'], description: 'Frequently null at the course level; read section.openSeats.' }
+        termInd: { type: string, description: 'Term indicator; single character, often a space.' }
+        description: { type: string }
+        prerequisites: { type: string }
+        courseKey: { type: string, description: 'Client-assigned key; present only in the ONE.UF client, not the raw payload.' }
+        sections:
+          type: array
+          items: { $ref: '#/components/schemas/Section' }
+    Section:
+      type: object
+      required: [number, classNumber, display, credits, deptCode, deptName]
+      properties:
+        number: { type: string, description: 'Section number, e.g. APP1.' }
+        classNumber: { type: integer, description: 'Five-digit registration class number.' }
+        isStartDate45DaysOut: { type: boolean }
+        simpleSyllabusParams: { type: string, description: 'Opaque key for the Simple Syllabus integration, e.g. "Spring 2025/ABE//10101".' }
+        gradBasis: { type: string, description: 'Grading basis, e.g. GRD, SU.' }
+        acadCareer: { type: string, description: 'Academic career, e.g. UGRD, GRAD.' }
+        display: { type: string, description: 'Abbreviated section title as shown in ONE.UF.' }
+        credits: { type: ['number', 'string'] }
+        credits_min: { type: ['number', 'string'] }
+        credits_max: { type: ['number', 'string'] }
+        note: { type: string }
+        dNote: { type: string, description: 'Department note.' }
+        genEd:
+          type: array
+          description: General Education designations carried by this section.
+          items: { type: string }
+        quest:
+          type: array
+          description: UF Quest designations.
+          items: { type: string }
+        sectWeb: { type: string, description: 'Delivery code, e.g. PC (primarily classroom), HB (hybrid), AD, PD.' }
+        rotateTitle: { type: string }
+        deptCode: { type: ['integer', 'string'] }
+        deptName: { type: string }
+        openSeats: { type: ['integer', 'null'] }
+        courseFee: { type: ['number', 'null'] }
+        lateFlag: { type: string, enum: [Y, N] }
+        EEP: { type: string, enum: [Y, N], description: 'Employee Education Program eligible.' }
+        LMS: { type: string, description: 'Learning management system indicator; often empty.' }
+        instructors:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+        meetTimes:
+          type: array
+          items: { $ref: '#/components/schemas/MeetTime' }
+        addEligible: { type: string, enum: [Y, N] }
+        grWriting: { type: string, enum: [Y, N], description: 'Gordon Rule writing.' }
+        finalExam: { type: string }
+        dropaddDeadline: { type: string, description: 'MM/DD/YYYY.' }
+        pastDeadline: { type: boolean }
+        startDate: { type: string }
+        endDate: { type: string }
+        waitList: { $ref: '#/components/schemas/WaitList' }
+    MeetTime:
+      type: object
+      properties:
+        meetNo: { type: integer }
+        meetDays:
+          type: array
+          items: { type: string, description: 'M, T, W, R, F, S.' }
+        meetTimeBegin: { type: string }
+        meetTimeEnd: { type: string }
+        meetPeriodBegin: { type: string }
+        meetPeriodEnd: { type: string }
+        meetBuilding: { type: string }
+        meetBldgCode: { type: string }
+        meetRoom: { type: string }
+    WaitList:
+      type: object
+      properties:
+        isEligible: { type: string, enum: [Y, N] }
+        cap: { type: integer }
+        total: { type: integer }
+    Filters:
+      type: object
+      required: [categories, progLevels, terms, departments]
+      properties:
+        categories:
+          type: array
+          items: { $ref: '#/components/schemas/CodeDesc' }
+        progLevels:
+          type: array
+          items: { $ref: '#/components/schemas/CodeDesc' }
+        terms:
+          type: array
+          description: 'Observed 49 terms on 2026-09-01, newest first.'
+          items:
+            allOf:
+              - { $ref: '#/components/schemas/CodeDesc' }
+              - type: object
+                properties:
+                  SORT_TERM: { type: integer }
+        departments:
+          type: array
+          description: 'Observed 203 departments on 2026-09-01.'
+          items: { $ref: '#/components/schemas/CodeDesc' }
+    CodeDesc:
+      type: object
+      required: [CODE, DESC]
+      properties:
+        CODE: { type: string }
+        DESC: { type: string }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [title, description, message]
+          properties:
+            title: { type: string, description: 'Short classification, e.g. "Resource not found".' }
+            description: { type: string, description: 'Machine-ish cause, e.g. "Invalid term".' }
+            message: { type: string, description: 'Human-facing apology string.' }

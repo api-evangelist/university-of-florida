@@ -1,0 +1,123 @@
+specification: API Evangelist Error Semantics
+specificationVersion: '0.1'
+provider: University of Florida
+providerId: university-of-florida
+generated: '2026-09-01'
+method: probed
+source: >-
+  Deliberate malformed requests against both institution-operated APIs on 2026-09-01 —
+  omitted required parameters, unknown parameter values, unknown paths and unknown
+  resources — with the exact response body and status recorded for each.
+description: >-
+  Error behaviour differs sharply between UF's two public APIs, and neither documents it.
+  The Schedule of Courses API returns a structured JSON error envelope with a real HTTP
+  status. The Libraries Patron API returns HTML for unknown paths. Both have a silent
+  failure mode where an invalid VALUE returns HTTP 200 with an empty result set rather
+  than an error — the single most important thing an agent consuming these APIs needs to
+  know, and the thing no UF page says.
+
+apis:
+- name: UF Schedule of Courses (SOC) API
+  baseURL: https://one.ufl.edu/apix/soc
+  x-operator: institution
+  envelope:
+    shape:
+      error:
+        title: string
+        description: string
+        message: string
+    example:
+      error:
+        title: Resource not found
+        description: Invalid term
+        message: "We're sorry, but we have encountered an error. Please try again."
+    note: >-
+      `title` is the classification, `description` is the machine-useful cause, `message`
+      is a fixed human apology string carrying no information. No error code, no
+      correlation id, no documentation link, no retry hint.
+  observed:
+  - trigger: 'GET /schedule with no `term` parameter'
+    url: https://one.ufl.edu/apix/soc/schedule/
+    status: 400
+    body_type: application/json
+    body: '{"error":{"title":"Resource not found","description":"Invalid term","message":"We''re sorry, but we have encountered an error. Please try again."}}'
+    note: >-
+      Correct behaviour, and the only structured error this API is observed to emit. Note
+      the title says "Resource not found" on a 400 — the title does not track the status.
+  - trigger: 'GET /schedule with an unrecognised `term` value'
+    url: https://one.ufl.edu/apix/soc/schedule/?term=BOGUS&last-control-number=0
+    status: 200
+    body_type: application/json
+    body: '[{"COURSES":[],"LASTCONTROLNUMBER":0,"RETRIEVEDROWS":0,"TOTALROWS":0}]'
+    severity: silent-failure
+    note: >-
+      A garbage term is NOT an error. It is an empty success. A consumer that checks only
+      the status code cannot distinguish "this term has no matching courses" from "you
+      sent a term code that does not exist". Check `TOTALROWS` against a known-good
+      baseline, or validate `term` against GET /filters first.
+  - trigger: 'GET an unknown path under /apix/soc'
+    url: https://one.ufl.edu/apix/soc/departments/
+    status: 404
+    body_type: text/html
+    body_excerpt: '<pre>Cannot GET /apix/soc/departments/</pre>'
+    note: >-
+      Express default 404 page. Leaks the framework and returns HTML from a JSON API — a
+      consumer parsing every response as JSON will throw here rather than read a 404.
+  - trigger: 'Unrecognised query parameter'
+    status: 200
+    severity: silent-failure
+    note: >-
+      Unknown parameters are ignored silently and return the unfiltered result set. A
+      typo in a filter name produces a valid-looking, wrong answer. Several parameters
+      named in the ONE.UF client bundle behave this way in practice — see
+      `x-unverified-parameters` in the OpenAPI.
+
+- name: UF Libraries Patron API
+  baseURL: https://api.patron.uflib.ufl.edu
+  x-operator: institution
+  envelope:
+    shape: none
+    note: >-
+      No JSON error envelope of any kind was observed. Unknown paths return an HTML
+      document. Resource roots called without parameters return a HELP object of worked
+      example URLs rather than an error — an unusual and genuinely useful choice, but it
+      means "no parameters" and "bad parameters" are not distinguishable by shape.
+  observed:
+  - trigger: 'GET an unknown path'
+    url: https://api.patron.uflib.ufl.edu/openapi.json
+    status: 404
+    body_type: text/html
+    body_excerpt: '<h1>Not Found</h1><p>The requested resource was not found on this server.</p>'
+  - trigger: 'GET a known resource root with no parameters'
+    url: https://api.patron.uflib.ufl.edu/mapsearch
+    status: 200
+    body_type: application/json
+    note: >-
+      Returns example URLs for its own parameters instead of an error. Self-documenting,
+      not a failure — but a naive consumer will parse the help object as a result set.
+  - trigger: 'GET /oai or /oai_by_title, when DNS resolves onto 128.227.24.223'
+    url: https://api.patron.uflib.ufl.edu/oai?verb=Identify
+    status: 404
+    body_type: text/html
+    severity: intermittent-outage
+    note: >-
+      The hostname has two A records and they do not serve the same routes.
+      128.227.18.113 serves /oai and /oai_by_title; 128.227.24.223 returns 404 for both
+      while serving every other resource normally. Verified 2026-09-01 by pinning each
+      address with curl --resolve and replaying nine routes against both. A harvester that
+      lands on the second node reads the repository as withdrawn; a retry that lands on
+      the first succeeds, so the failure looks random. This is deployment drift between
+      backends, and UF has no status page on which it would surface.
+  - trigger: 'OAI-PMH protocol errors'
+    url: https://api.patron.uflib.ufl.edu/oai
+    status: 200
+    note: >-
+      Per OAI-PMH 2.0, protocol errors are carried INSIDE a 200 response as an
+      `<error code="...">` element. This is correct for the standard and is not a defect,
+      but it means HTTP status is never a validity signal on this path.
+
+gaps:
+- 'Neither API documents any error at all — everything above was derived by probing.'
+- 'No error codes, no correlation identifiers, no documentation links in any error body.'
+- 'No 429 or rate-limit response observed; no rate-limit headers on any response.'
+- 'No retry, backoff or idempotency guidance published for either API.'

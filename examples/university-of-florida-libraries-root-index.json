@@ -1,0 +1,38 @@
+{
+  "specification": "API Evangelist Examples",
+  "specificationVersion": "0.1",
+  "provider": "University of Florida",
+  "providerId": "university-of-florida",
+  "generated": "2026-09-01",
+  "method": "probed",
+  "source": "https://api.patron.uflib.ufl.edu (HTTP 200, 2026-09-01)",
+  "x-operator": "institution",
+  "description": "The UF Libraries Patron API root index, verbatim and untruncated. This machine-readable resource index is how the API's 17 resources were discovered; UF publishes no OpenAPI or reference documentation for it.",
+  "request": {
+    "method": "GET",
+    "url": "https://api.patron.uflib.ufl.edu",
+    "authentication": "none"
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json",
+    "truncated": false,
+    "body": {
+      "citation": "https://api.patron.uflib.ufl.edu/citation",
+      "mapsearch": "https://api.patron.uflib.ufl.edu/mapsearch",
+      "pagetext": "https://api.patron.uflib.ufl.edu/pagetext",
+      "serialtitles": "https://api.patron.uflib.ufl.edu/serialtitles",
+      "serialhierarchy": "https://api.patron.uflib.ufl.edu/serialhierarchy",
+      "downloads": "https://api.patron.uflib.ufl.edu/downloads",
+      "collections": "https://api.patron.uflib.ufl.edu/collections",
+      "types": "https://api.patron.uflib.ufl.edu/types",
+      "stats": "https://api.patron.uflib.ufl.edu/stats",
+      "publishers": "https://api.patron.uflib.ufl.edu/publishers",
+      "fdnl_titles_list": "https://api.patron.uflib.ufl.edu/fdnl_titles_list",
+      "rss": "https://api.patron.uflib.ufl.edu/rss",
+      "all_vids_in_bibid": "https://api.patron.uflib.ufl.edu/all_vids_in_bibid",
+      "exactsearch": "https://api.patron.uflib.ufl.edu/exactsearch",
+      "recent_additions": "https://api.patron.uflib.ufl.edu/recent_additions"
+    }
+  }
+}

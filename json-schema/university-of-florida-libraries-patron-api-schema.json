@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/university-of-florida/main/json-schema/university-of-florida-libraries-patron-api-schema.json",
+  "title": "University of Florida Libraries Patron API \u2014 response schemas",
+  "description": "JSON Schema 2020-12 derived from the probed OpenAPI in openapi/. Not published by the University of Florida.",
+  "x-provenance": {
+    "generated": "2026-09-01",
+    "method": "derived",
+    "x-operator": "institution",
+    "source": "Derived from openapi/university-of-florida-libraries-patron-api-openapi.yml, which was itself derived from live HTTP probes on 2026-09-01."
+  },
+  "$defs": {
+    "SearchResult": {
+      "type": "object",
+      "required": [
+        "hits"
+      ],
+      "properties": {
+        "query": {
+          "type": [
+            "string",
+            "object"
+          ]
+        },
+        "hit_count": {
+          "type": "integer"
+        },
+        "filter_buckets": {
+          "type": "object",
+          "description": "Facet counts keyed by field."
+        },
+        "hits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Hit"
+          }
+        },
+        "ip": {
+          "type": "string",
+          "description": "The API echoes the CALLER's own IP address back in this field. It is not institutional data and must not be stored in a catalogued example."
+        }
+      }
+    },
+    "Hit": {
+      "type": "object",
+      "properties": {
+        "did": {
+          "type": "string",
+          "description": "`BIBID:VID`."
+        },
+        "bibid": {
+          "type": "string"
+        },
+        "vid": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "mediatype": {
+          "type": "string"
+        },
+        "aggregationcodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mainthumbnail": {
+          "type": "string"
+        },
+        "mainjpeg": {
+          "type": "string"
+        },
+        "pagecount": {
+          "type": "integer"
+        },
+        "language": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "creator": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subject_keyword": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "genre": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_institution": {
+          "type": "string"
+        },
+        "holding_location": {
+          "type": "string"
+        },
+        "publication_date": {
+          "type": "string"
+        },
+        "conv_date": {
+          "type": "string",
+          "description": "Normalised date, YYYY-MM-DD."
+        },
+        "collections": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "general_note": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ip_restriction_mask": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "made_public_date": {
+          "type": "string"
+        },
+        "hit_reason": {
+          "type": [
+            "string",
+            "array",
+            "object"
+          ]
+        }
+      }
+    },
+    "Collection": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "shortname": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "description": "HTML."
+        }
+      }
+    },
+    "CountedFacet": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "current_item_count": {
+          "type": "integer"
+        },
+        "es_keyword": {
+          "type": "string",
+          "description": "Underlying search-index keyword."
+        }
+      }
+    },
+    "FdnlTitle": {
+      "type": "object",
+      "properties": {
+        "bibid": {
+          "type": "string"
+        },
+        "vid": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "\"lat,lng\"."
+          }
+        },
+        "county": {
+          "type": "string"
+        },
+        "vids_per_bibid": {
+          "type": "integer"
+        },
+        "min_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "max_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "Citation": {
+      "type": "object",
+      "properties": {
+        "Title": {
+          "type": "string"
+        },
+        "Creators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "Language": {
+          "type": "string"
+        },
+        "genre": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "authority": {
+                "type": "string",
+                "description": "e.g. aat, rbgenr, marcgt."
+              }
+            }
+          }
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "subject_string": {
+                "type": "string"
+              },
+              "subject_fields": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "item_pdf": {
+          "type": "string"
+        },
+        "scale": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "edition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "etd": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Electronic thesis/dissertation block."
+        }
+      }
+    }
+  }
+}
