@@ -257,6 +257,77 @@ paths:
         - wr-6000
 components:
   schemas:
+    MeetTime:
+      type: object
+      properties:
+        meetNo:
+          type: integer
+        meetDays:
+          type: array
+          items:
+            type: string
+            description: M, T, W, R, F, S.
+        meetTimeBegin:
+          type: string
+        meetTimeEnd:
+          type: string
+        meetPeriodBegin:
+          type: string
+        meetPeriodEnd:
+          type: string
+        meetBuilding:
+          type: string
+        meetBldgCode:
+          type: string
+        meetRoom:
+          type: string
+    Course:
+      type: object
+      required:
+      - code
+      - courseId
+      - name
+      - sections
+      properties:
+        code:
+          type: string
+          description: Course code without space, e.g. ABE3000C.
+        courseId:
+          type: string
+          description: Zero-padded internal course identifier.
+        name:
+          type: string
+        openSeats:
+          type:
+          - integer
+          - 'null'
+          description: Frequently null at the course level; read section.openSeats.
+        termInd:
+          type: string
+          description: Term indicator; single character, often a space.
+        description:
+          type: string
+        prerequisites:
+          type: string
+        courseKey:
+          type: string
+          description: Client-assigned key; present only in the ONE.UF client, not the raw payload.
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+    WaitList:
+      type: object
+      properties:
+        isEligible:
+          type: string
+          enum:
+          - Y
+          - N
+        cap:
+          type: integer
+        total:
+          type: integer
     Error:
       type: object
       required:
@@ -300,18 +371,6 @@ components:
         TOTALROWS:
           type: integer
           description: Total rows matching the query across all pages.
-    WaitList:
-      type: object
-      properties:
-        isEligible:
-          type: string
-          enum:
-          - Y
-          - N
-        cap:
-          type: integer
-        total:
-          type: integer
     Section:
       type: object
       required:
@@ -437,62 +496,3 @@ components:
           type: string
         waitList:
           $ref: '#/components/schemas/WaitList'
-    MeetTime:
-      type: object
-      properties:
-        meetNo:
-          type: integer
-        meetDays:
-          type: array
-          items:
-            type: string
-            description: M, T, W, R, F, S.
-        meetTimeBegin:
-          type: string
-        meetTimeEnd:
-          type: string
-        meetPeriodBegin:
-          type: string
-        meetPeriodEnd:
-          type: string
-        meetBuilding:
-          type: string
-        meetBldgCode:
-          type: string
-        meetRoom:
-          type: string
-    Course:
-      type: object
-      required:
-      - code
-      - courseId
-      - name
-      - sections
-      properties:
-        code:
-          type: string
-          description: Course code without space, e.g. ABE3000C.
-        courseId:
-          type: string
-          description: Zero-padded internal course identifier.
-        name:
-          type: string
-        openSeats:
-          type:
-          - integer
-          - 'null'
-          description: Frequently null at the course level; read section.openSeats.
-        termInd:
-          type: string
-          description: Term indicator; single character, often a space.
-        description:
-          type: string
-        prerequisites:
-          type: string
-        courseKey:
-          type: string
-          description: Client-assigned key; present only in the ONE.UF client, not the raw payload.
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Section'

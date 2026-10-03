@@ -133,6 +133,27 @@ paths:
                   $ref: '#/components/schemas/FdnlTitle'
 components:
   schemas:
+    SearchResult:
+      type: object
+      required:
+      - hits
+      properties:
+        query:
+          type:
+          - string
+          - object
+        hit_count:
+          type: integer
+        filter_buckets:
+          type: object
+          description: Facet counts keyed by field.
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hit'
+        ip:
+          type: string
+          description: The API echoes the CALLER's own IP address back in this field. It is not institutional data and must not be stored in a catalogued example.
     Collection:
       type: object
       properties:
@@ -145,6 +166,16 @@ components:
         description:
           type: string
           description: HTML.
+    CountedFacet:
+      type: object
+      properties:
+        name:
+          type: string
+        current_item_count:
+          type: integer
+        es_keyword:
+          type: string
+          description: Underlying search-index keyword.
     FdnlTitle:
       type: object
       properties:
@@ -171,16 +202,6 @@ components:
           type:
           - string
           - 'null'
-    CountedFacet:
-      type: object
-      properties:
-        name:
-          type: string
-        current_item_count:
-          type: integer
-        es_keyword:
-          type: string
-          description: Underlying search-index keyword.
     Hit:
       type: object
       properties:
@@ -249,27 +270,6 @@ components:
           - string
           - array
           - object
-    SearchResult:
-      type: object
-      required:
-      - hits
-      properties:
-        query:
-          type:
-          - string
-          - object
-        hit_count:
-          type: integer
-        filter_buckets:
-          type: object
-          description: Facet counts keyed by field.
-        hits:
-          type: array
-          items:
-            $ref: '#/components/schemas/Hit'
-        ip:
-          type: string
-          description: The API echoes the CALLER's own IP address back in this field. It is not institutional data and must not be stored in a catalogued example.
 x-node-divergence:
   observed: '2026-09-01'
   method: probed
