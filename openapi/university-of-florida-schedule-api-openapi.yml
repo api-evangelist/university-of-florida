@@ -281,96 +281,6 @@ components:
           type: string
         meetRoom:
           type: string
-    Course:
-      type: object
-      required:
-      - code
-      - courseId
-      - name
-      - sections
-      properties:
-        code:
-          type: string
-          description: Course code without space, e.g. ABE3000C.
-        courseId:
-          type: string
-          description: Zero-padded internal course identifier.
-        name:
-          type: string
-        openSeats:
-          type:
-          - integer
-          - 'null'
-          description: Frequently null at the course level; read section.openSeats.
-        termInd:
-          type: string
-          description: Term indicator; single character, often a space.
-        description:
-          type: string
-        prerequisites:
-          type: string
-        courseKey:
-          type: string
-          description: Client-assigned key; present only in the ONE.UF client, not the raw payload.
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Section'
-    WaitList:
-      type: object
-      properties:
-        isEligible:
-          type: string
-          enum:
-          - Y
-          - N
-        cap:
-          type: integer
-        total:
-          type: integer
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - title
-          - description
-          - message
-          properties:
-            title:
-              type: string
-              description: Short classification, e.g. "Resource not found".
-            description:
-              type: string
-              description: Machine-ish cause, e.g. "Invalid term".
-            message:
-              type: string
-              description: Human-facing apology string.
-    SchedulePage:
-      type: object
-      description: One page of course results plus the cursor-paging counters.
-      required:
-      - COURSES
-      - LASTCONTROLNUMBER
-      - RETRIEVEDROWS
-      - TOTALROWS
-      properties:
-        COURSES:
-          type: array
-          items:
-            $ref: '#/components/schemas/Course'
-        LASTCONTROLNUMBER:
-          type: integer
-          description: Cursor to pass as `last-control-number` on the next call.
-        RETRIEVEDROWS:
-          type: integer
-          description: Rows returned by this call (observed ~50).
-        TOTALROWS:
-          type: integer
-          description: Total rows matching the query across all pages.
     Section:
       type: object
       required:
@@ -496,3 +406,93 @@ components:
           type: string
         waitList:
           $ref: '#/components/schemas/WaitList'
+    Course:
+      type: object
+      required:
+      - code
+      - courseId
+      - name
+      - sections
+      properties:
+        code:
+          type: string
+          description: Course code without space, e.g. ABE3000C.
+        courseId:
+          type: string
+          description: Zero-padded internal course identifier.
+        name:
+          type: string
+        openSeats:
+          type:
+          - integer
+          - 'null'
+          description: Frequently null at the course level; read section.openSeats.
+        termInd:
+          type: string
+          description: Term indicator; single character, often a space.
+        description:
+          type: string
+        prerequisites:
+          type: string
+        courseKey:
+          type: string
+          description: Client-assigned key; present only in the ONE.UF client, not the raw payload.
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+    WaitList:
+      type: object
+      properties:
+        isEligible:
+          type: string
+          enum:
+          - Y
+          - N
+        cap:
+          type: integer
+        total:
+          type: integer
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - title
+          - description
+          - message
+          properties:
+            title:
+              type: string
+              description: Short classification, e.g. "Resource not found".
+            description:
+              type: string
+              description: Machine-ish cause, e.g. "Invalid term".
+            message:
+              type: string
+              description: Human-facing apology string.
+    SchedulePage:
+      type: object
+      description: One page of course results plus the cursor-paging counters.
+      required:
+      - COURSES
+      - LASTCONTROLNUMBER
+      - RETRIEVEDROWS
+      - TOTALROWS
+      properties:
+        COURSES:
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
+        LASTCONTROLNUMBER:
+          type: integer
+          description: Cursor to pass as `last-control-number` on the next call.
+        RETRIEVEDROWS:
+          type: integer
+          description: Rows returned by this call (observed ~50).
+        TOTALROWS:
+          type: integer
+          description: Total rows matching the query across all pages.
