@@ -41,16 +41,6 @@ paths:
                   externalValue: https://one.ufl.edu/apix/soc/filters/
 components:
   schemas:
-    CodeDesc:
-      type: object
-      required:
-      - CODE
-      - DESC
-      properties:
-        CODE:
-          type: string
-        DESC:
-          type: string
     Filters:
       type: object
       required:
@@ -82,3 +72,13 @@ components:
           description: Observed 203 departments on 2026-09-01.
           items:
             $ref: '#/components/schemas/CodeDesc'
+    CodeDesc:
+      type: object
+      required:
+      - CODE
+      - DESC
+      properties:
+        CODE:
+          type: string
+        DESC:
+          type: string
